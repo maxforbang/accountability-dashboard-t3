@@ -7,7 +7,11 @@ import { UserButton, useUser } from "@clerk/nextjs";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const {data: examples} = api.example.getAll.useQuery();
+  const {data} = api.goals.getAll.useQuery();
   //const user = useUser();
+
+  console.log(hello)
 
   return (
     <>
@@ -23,6 +27,7 @@ const Home: NextPage = () => {
           </h1>
           <p className="text-2xl text-white">
             {hello.data ? hello.data.greeting : "Loading tRPC query..."}
+            {data?.map(goal => <div>{goal.content}</div>)}
           </p>
         </div>
         <div>
