@@ -6,29 +6,76 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
 
+model Team {
+  id   String @id @default(cuid())
+  name String
+}
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Membership {
+  id String @id @default(cuid())
+
+  teamId String
+  userId String
+}
+
+model AccountabilityPeriod {
+  id       String   @id @default(cuid())
+  startDay DateTime
+  endDay   DateTime
+
+  teamId String
+
+  @@index([teamId])
 }
 
 model Goal {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  content     String //@db.VarChar(255)
+  description String
+  completed   Boolean
+  weight      Decimal?
+
+  userId                 String
+  accountabilityPeriodId String
+
+  @@index([accountabilityPeriodId])
+}
+
+model Comment {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  content   String
 
-  userId String
-  accountabilityPeriod String
+  accountabilityPeriodId String
+  goalId                 String?
+  commentId              String?
 
-  content String //@db.VarChar(255)
-  description String
-  completed Boolean
+  @@index([accountabilityPeriodId])
+}
 
-  @@index([userId])
+model SmallWin {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+
+  accountabilityPeriodId String
+}
+
+// Pig Ears, Most/Least Difficult Goals Badge
+model Badge {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  content   String
+
+  membershipId           String
+  accountabilityPeriodId String?
 }
