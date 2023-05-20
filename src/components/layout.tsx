@@ -21,7 +21,6 @@ const Layout: Component = ({ children }) => {
   const navigation = [
     { name: "Dashboard", href: "/", current: router.asPath == "/" },
     { name: "Goals", href: "/goals", current: router.asPath == "/goals" },
-  
   ];
 
   return (
@@ -81,7 +80,7 @@ const Layout: Component = ({ children }) => {
                           </button> */}
 
                           {/* Profile dropdown */}
-                          <UserButton />
+                          {<UserButton />}
                         </div>
                       </div>
                       <div className="-mr-2 flex md:hidden">
@@ -139,7 +138,7 @@ const Layout: Component = ({ children }) => {
         </div>
 
         <main className="-mt-32">
-          <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8 ">
             {children}
           </div>
         </main>

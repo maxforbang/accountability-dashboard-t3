@@ -21,6 +21,8 @@ model Membership {
 
   teamId String
   userId String
+
+  @@index([teamId])
 }
 
 model AccountabilityPeriod {
