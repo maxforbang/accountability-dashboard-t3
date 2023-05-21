@@ -1,0 +1,61 @@
+//GoalsChecklist
+const ctx = api.useContext();
+const { mutate: toggleCompleted } = api.goals.toggleCompleted.useMutation({
+  onMutate: async (mutationInput) => {
+    // Cancel any outgoing refetches so they don't overwrite our optimistic update
+    await ctx.goals.getUserGoalsForCurrentAccountabilityPeriod.cancel();
+
+    // Snapshot the previous value
+    const { goals: previousGoals, accountabilityPeriod } =
+      ctx.goals.getUserGoalsForCurrentAccountabilityPeriod.getData() as {
+        goals: Goal[];
+        accountabilityPeriod: AccountabilityPeriod;
+      };
+
+    ctx.goals.getUserGoalsForCurrentAccountabilityPeriod.setData(
+      {
+        teamId,
+        userId,
+        selectedDate: date,
+        type,
+      },
+      (old) => {
+        if (!old) return;
+
+        const newGoals = old.goals.map((goal) => {
+          if (goal.id === mutationInput.goalId) {
+            return { ...goal, completed: !goal.completed };
+          }
+          return goal;
+        });
+
+        return {
+          goals: newGoals,
+          accountabilityPeriod: old.accountabilityPeriod,
+        };
+      }
+    );
+    return { previousGoals, accountabilityPeriod };
+  },
+  onError: (err, previousGoals, accountabilityPeriod) => {
+    if (previousGoals) {
+      ctx.goals.getUserGoalsForCurrentAccountabilityPeriod.setData(
+        {
+          teamId,
+          userId,
+          selectedDate: date,
+          type,
+        },
+        () => {
+          return {
+            goals: previousGoals,
+            accountabilityPeriod: accountabilityPeriod,
+          };
+        }
+      );
+    }
+  },
+  onSuccess: () => {
+    void ctx.goals.getUserGoalsForCurrentAccountabilityPeriod.invalidate();
+  },
+});

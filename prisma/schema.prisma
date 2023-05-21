@@ -26,9 +26,10 @@ model Membership {
 }
 
 model AccountabilityPeriod {
-  id       String   @id @default(cuid())
+  id       String             @id @default(cuid())
   startDay DateTime
   endDay   DateTime
+  type     String @default("WEEK")
 
   teamId String
 
@@ -80,4 +81,10 @@ model Badge {
 
   membershipId           String
   accountabilityPeriodId String?
+}
+
+enum AccountabilityType {
+  WEEK
+  QUARTER
+  YEAR
 }

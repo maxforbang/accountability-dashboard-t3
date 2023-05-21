@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import Layout from "../components/layout";
+import Layout from "../components/Layout";
 // import NestedLayout from '../components/nested-layout';
 import type { NextPageWithLayout } from "./_app";
 import Head from "next/head";
@@ -222,7 +222,7 @@ const Dashboard: NextPageWithLayout = () => {
   const { user, isSignedIn } = useUser();
 
   if (!user) {
-    return <p>Loading user...</p>;
+    return <p>Loading...</p>;
   }
 
   const { data: teammates = [] } = api.goals.getTeammatesMemberships.useQuery({
@@ -242,27 +242,36 @@ const Dashboard: NextPageWithLayout = () => {
       </Head>
       <main>
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-            <QuarterCard />
-            <div className="-mx-4 bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-2 lg:row-span-2 lg:row-end-2 xl:px-16 xl:pb-20 xl:pt-16">
+          <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
+            <div className="-mx-4 rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 lg:col-span-1 lg:col-start-3 lg:row-span-1 lg:row-end-1 xl:px-8 xl:pb-6 xl:pt-8">
               <SelfAccountabilityCard
                 teamId={user.publicMetadata["currentTeamId"] as string}
                 userId={user.id}
                 date={new Date()}
+                type="QUARTER"
               />
-              <div>
-                {teammates.map((user) => {
-                  return (
-                    <AccountabilityCard
-                      userId={user.userId}
-                      teamId={user.teamId}
-                      date={new Date()}
-                    />
-                  );
-                })}
-              </div>
             </div>
-            <div className="lg:col-start-3">
+
+            <div className="-mx-4 rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-end-2 xl:px-12 xl:pb-6 xl:pt-12">
+              <SelfAccountabilityCard
+                teamId={user.publicMetadata["currentTeamId"] as string}
+                userId={user.id}
+                date={new Date()}
+                type="WEEK"
+              />
+            </div>
+            {teammates.map((user) => {
+              return (
+                <AccountabilityCard
+                  userId={user.userId}
+                  teamId={user.teamId}
+                  date={new Date()}
+                  type="WEEK"
+                />
+              );
+            })}
+
+            <div className="lg:col-start-3 lg:row-start-2">
               <ActivityFeed />
             </div>
           </div>
