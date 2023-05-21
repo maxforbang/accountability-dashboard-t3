@@ -18,6 +18,8 @@ model Team {
 
 model Membership {
   id String @id @default(cuid())
+  role String?
+  pigEars Int?
 
   teamId String
   userId String

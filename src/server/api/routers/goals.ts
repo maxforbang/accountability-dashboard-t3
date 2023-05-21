@@ -8,7 +8,29 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const goalsRouter = createTRPCRouter({
-  getTeammatesMemberships: publicProcedure
+  getTeam: publicProcedure
+  .input(
+    z.object({
+      teamId: z.string(),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const memberships = await ctx.prisma.membership.findMany({
+      where: {
+        teamId: input.teamId,
+      },
+      orderBy: {
+        pigEars: "desc"
+      }
+    });
+
+    const users = await clerkClient.users.getUserList({
+      userId: memberships.map(member => member.userId)
+    })
+
+    return {memberships, users};
+  }),
+  getTeammates: publicProcedure
     .input(
       z.object({
         userId: z.string(),
@@ -25,7 +47,11 @@ export const goalsRouter = createTRPCRouter({
         },
       });
 
-      return memberships;
+      const users = await clerkClient.users.getUserList({
+        userId: memberships.map(member => member.userId)
+      })
+
+      return {memberships, users};
     }),
   getUserGoalsForCurrentAccountabilityPeriod: publicProcedure
     .input(

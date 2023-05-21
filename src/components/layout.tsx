@@ -20,7 +20,9 @@ const Layout: Component = ({ children }) => {
 
   const navigation = [
     { name: "Dashboard", href: "/", current: router.asPath == "/" },
-    { name: "Goals", href: "/goals", current: router.asPath == "/goals" },
+    // { name: "Goals", href: "/goals", current: router.asPath == "/goals" },
+    { name: "Leaderboard", href: "/leaderboard", current: router.asPath == "/leaderboard" },
+
   ];
 
   return (

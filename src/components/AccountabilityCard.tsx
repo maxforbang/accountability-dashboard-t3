@@ -1,29 +1,39 @@
 import { Component } from "react";
 import { api } from "~/utils/api";
-import GoalsChecklist, {  } from "./GoalsChecklist";
+import GoalsChecklist from "./GoalsChecklist";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import { timeSinceModifiedString } from "~/utils/shared/functions";
+import {
+  CodeBracketIcon,
+  EllipsisVerticalIcon,
+  FlagIcon,
+  StarIcon,
+} from "@heroicons/react/20/solid";
+import { classNames, timeSinceModifiedString } from "~/utils/shared/functions";
+import { useUser } from "@clerk/nextjs";
+import { User } from "@clerk/nextjs/dist/server";
+import { Membership } from "@prisma/client";
 //import { AccountabilityType } from "@prisma/client";
 
 interface AccountabilityProps {
   teamId: string;
-  userId: string;
+  user: User;
+  membership: Membership;
   date: Date;
   type: string | undefined;
 }
 
 const AccountabilityCard = ({
   teamId,
-  userId,
+  user,
+  membership,
   date,
   type = "WEEK",
 }: AccountabilityProps) => {
   const { data: { goals = [], accountabilityPeriod } = {} } =
     api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
       teamId,
-      userId,
+      userId: user.id,
       selectedDate: date,
       type,
     });
@@ -42,7 +52,7 @@ const AccountabilityCard = ({
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="h-12 w-12 lg:h-7 lg:w-7 md:h-10 md:w-10 fill-green-100 stroke-green-600"
+            className="h-12 w-12 fill-green-100 stroke-green-600 md:h-10 md:w-10 lg:h-7 lg:w-7"
           >
             <path
               strokeLinecap="round"
@@ -68,19 +78,29 @@ const AccountabilityCard = ({
         )}
 
         <div className="min-w-0 flex-auto">
-          <p className={classNames("text-sm font-semibold leading-6 ", goal.completed ? "text-emerald-700" : "text-gray-900")}>
+          <p
+            className={classNames(
+              "text-sm font-semibold leading-6 ",
+              goal.completed ? "text-emerald-700" : "text-gray-900"
+            )}
+          >
             {goal.content}
           </p>
-          <p className={classNames("mt-1 flex text-xs leading-5", goal.completed ? "text-emerald-600" : "text-gray-500")}>
+          <p
+            className={classNames(
+              "mt-1 flex text-xs leading-5",
+              goal.completed ? "text-emerald-600" : "text-gray-500"
+            )}
+          >
             {goal.description}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-x-6">
-        <div className="hidden sm:flex sm:flex-col sm:items-end min-w-max">
+        <div className="hidden min-w-max sm:flex sm:flex-col sm:items-end">
           <p className="text-sm leading-6 text-gray-900">{goal.weight}</p>
 
-          <p className="mt-1 text-xs leading-5 text-gray-400 ml-8">
+          <p className="ml-8 mt-1 text-xs leading-5 text-gray-400">
             {timeSinceModifiedString(goal)}
           </p>
         </div>
@@ -137,12 +157,12 @@ const AccountabilityCard = ({
 
   return (
     <>
-      <div className="-mx-4 rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 lg:col-span-2 lg:col-start-1 lg:row-span-2 xl:px-12 xl:pb-6 xl:pt-12">
-        <h2 className="mb-8 text-3xl font-semibold leading-6 text-gray-900">
-          Goals
-        </h2>
-
-        <ul role="list" className="divide-y divide-gray-100">
+      <div className="-mx-4 divide-y-2 rounded-lg  bg-gray-50 shadow-sm ring-1 ring-gray-900/5  sm:mx-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 ">
+        <AccountabilityHeader user={user} membership={membership} />
+        <ul
+          role="list"
+          className="divide-y divide-gray-100 px-4 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6"
+        >
           {goalRows}
         </ul>
       </div>
@@ -151,3 +171,114 @@ const AccountabilityCard = ({
 };
 
 export default AccountabilityCard;
+
+function AccountabilityHeader({
+  user,
+  membership,
+}: {
+  user: User;
+  membership: Membership;
+}) {
+  return (
+    <div className="ml-2 h-full rounded-lg bg-gray-50 px-4 py-5 sm:px-6">
+      <div className="flex space-x-3">
+        <div className="flex-shrink-0">
+          <img
+            className="h-12 w-12 rounded-full"
+            src={user.profileImageUrl}
+            alt=""
+          />
+        </div>
+        <div className=" min-w-0 flex-1 items-center pl-1">
+          <p className="text-sm font-semibold text-gray-900">
+            {user?.firstName}
+          </p>
+          <p className="text-sm text-gray-500">{membership.role}</p>
+        </div>
+        <div className="flex flex-shrink-0 self-center">
+          {/* AccountabilityCard Header Menu (Vote, Message, etc) */}
+          {/* <Menu as="div" className="relative inline-block text-left">
+            <div>
+              <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-400 hover:text-gray-600">
+                <span className="sr-only">Open options</span>
+                <EllipsisVerticalIcon className="h-5 w-5" aria-hidden="true" />
+              </Menu.Button>
+            </div>
+
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="py-1">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "flex px-4 py-2 text-sm"
+                        )}
+                      >
+                        <StarIcon
+                          className="mr-3 h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        <span>Add to favorites</span>
+                      </a>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "flex px-4 py-2 text-sm"
+                        )}
+                      >
+                        <CodeBracketIcon
+                          className="mr-3 h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        <span>Embed</span>
+                      </a>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <a
+                        href="#"
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "flex px-4 py-2 text-sm"
+                        )}
+                      >
+                        <FlagIcon
+                          className="mr-3 h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        <span>Report content</span>
+                      </a>
+                    )}
+                  </Menu.Item>
+                </div>
+              </Menu.Items>
+            </Transition>
+          </Menu> */}
+        </div>
+      </div>
+    </div>
+  );
+}

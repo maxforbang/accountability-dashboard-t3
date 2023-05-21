@@ -71,7 +71,6 @@ import {
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import SelfAccountabilityCard from "~/components/SelfAccountabilityCard";
 import ActivityFeed from "~/components/ActivityFeed";
-import QuarterCard from "~/components/QuarterCard";
 import AccountabilityCard from "~/components/AccountabilityCard";
 
 const navigation = [
@@ -225,7 +224,7 @@ const Dashboard: NextPageWithLayout = () => {
     return <p>Loading...</p>;
   }
 
-  const { data: teammates = [] } = api.goals.getTeammatesMemberships.useQuery({
+  const { data: {memberships = [], users = []} = {} } = api.goals.getTeammates.useQuery({
     userId: user.id,
     teamId: user.publicMetadata["currentTeamId"] as string,
   });
@@ -260,11 +259,12 @@ const Dashboard: NextPageWithLayout = () => {
                 type="WEEK"
               />
             </div>
-            {teammates.map((user) => {
+            {memberships.map((member) => {
               return (
                 <AccountabilityCard
-                  userId={user.userId}
-                  teamId={user.teamId}
+                  user={users.find(user => user.id === member.userId)}
+                  membership={member}
+                  teamId={member.teamId}
                   date={new Date()}
                   type="WEEK"
                 />
@@ -272,7 +272,7 @@ const Dashboard: NextPageWithLayout = () => {
             })}
 
             <div className="lg:col-start-3 lg:row-start-2">
-              <ActivityFeed />
+              {/* <ActivityFeed /> */}
             </div>
           </div>
         </div>
