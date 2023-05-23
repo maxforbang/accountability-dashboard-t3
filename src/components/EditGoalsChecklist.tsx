@@ -12,9 +12,8 @@
   }
   ```
 */
-import { AccountabilityPeriod, Goal } from "@prisma/client";
+import type { AccountabilityPeriod, Goal } from "@prisma/client";
 import { useState } from "react";
-import { api } from "~/utils/api";
 import { timeSinceModifiedString } from "~/utils/shared/functions";
 import EditGoalInput from "./EditGoalInput";
 import CreateGoalInput from "./CreateGoalInput";
@@ -26,7 +25,7 @@ interface GoalsCheckListProps {
 
 const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps) => {
   const latestUpdatedGoal = goals.reduce((previousGoal, currentGoal) => {
-    return currentGoal.updatedAt > previousGoal.updatedAt
+    return currentGoal.updatedAt > (previousGoal ? previousGoal.updatedAt : 0)
       ? currentGoal
       : previousGoal;
   }, goals.at(0));
@@ -34,7 +33,7 @@ const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps
   const [createNewGoalMode, setCreateNewGoalMode] = useState(false);
 
   const goalRows = goals.map((goal) => {
-    return <EditGoalInput goal={goal} />;
+    return <EditGoalInput goal={goal} key={`edit-goal-${goal.id}`}/>;
   });
 
   return (
@@ -54,7 +53,7 @@ const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps
 
 export default EditGoalsChecklist;
 
-const NewGoalButton = ({setCreateNewGoalMode}: {setCreateNewGoalMode: Function}) => {
+const NewGoalButton = ({setCreateNewGoalMode}: {setCreateNewGoalMode: (value: boolean) => void}) => {
   return (
     <button
       type="button"

@@ -1,4 +1,4 @@
-import { Goal } from "@prisma/client";
+import type { Goal } from "@prisma/client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);

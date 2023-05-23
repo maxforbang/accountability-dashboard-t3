@@ -1,4 +1,4 @@
-import { Goal } from "@prisma/client";
+import type { Goal } from "@prisma/client";
 import { useState } from "react";
 import { api } from "~/utils/api";
 import { classNames } from "~/utils/shared/functions";

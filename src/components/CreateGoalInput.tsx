@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/nextjs";
-import { Goal } from "@prisma/client";
 import { useState } from "react";
 import { api } from "~/utils/api";
 import { classNames } from "~/utils/shared/functions";
@@ -8,15 +7,13 @@ export default function CreateGoalInput({
   setCreateNewGoalMode,
   accountabilityPeriodId,
 }: {
-  setCreateNewGoalMode: Function;
+  setCreateNewGoalMode: (value: boolean) => void;
   accountabilityPeriodId: string;
 }) {
   const ctx = api.useContext();
   const { user } = useUser();
 
-  if (!user) {
-    return null;
-  }
+
 
   const { mutate: createGoal } = api.goals.createGoal.useMutation({
     onSuccess: () => {
@@ -26,6 +23,10 @@ export default function CreateGoalInput({
 
   const [goalValue, setGoalValue] = useState("");
   const [descriptionValue, setDescriptionValue] = useState("");
+
+  if (!user) {
+    return null;
+  }
 
   const goalModified = "" != goalValue;
 

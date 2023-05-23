@@ -1,8 +1,4 @@
 import { clerkClient } from "@clerk/nextjs";
-import { Description } from "@headlessui/react/dist/components/description/description";
-import { AccountabilityType, Goal } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
-import { describe } from "node:test";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -85,8 +81,6 @@ export const goalsRouter = createTRPCRouter({
 
         return { goals, accountabilityPeriod: currentAccountabilityPeriod };
       }
-
-      return [];
     }),
   toggleCompleted: publicProcedure
     .input(

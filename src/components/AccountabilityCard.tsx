@@ -1,19 +1,7 @@
-import { Component } from "react";
 import { api } from "~/utils/api";
-import GoalsChecklist from "./GoalsChecklist";
-import { Fragment } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import {
-  CodeBracketIcon,
-  EllipsisVerticalIcon,
-  FlagIcon,
-  StarIcon,
-} from "@heroicons/react/20/solid";
 import { classNames, timeSinceModifiedString } from "~/utils/shared/functions";
-import { useUser } from "@clerk/nextjs";
-import { User } from "@clerk/nextjs/dist/server";
-import { Membership } from "@prisma/client";
-//import { AccountabilityType } from "@prisma/client";
+import type { User } from "@clerk/nextjs/dist/server";
+import type { Membership } from "@prisma/client";
 
 interface AccountabilityProps {
   teamId: string;
@@ -30,17 +18,13 @@ const AccountabilityCard = ({
   date,
   type = "WEEK",
 }: AccountabilityProps) => {
-  const { data: { goals = [], accountabilityPeriod } = {} } =
+  const { data: { goals = [] } = {} } =
     api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
       teamId,
       userId: user.id,
       selectedDate: date,
       type,
     });
-
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-  }
 
   const goalRows = goals.map((goal) => (
     <li key={goal.id} className="flex justify-between gap-x-6 py-5 ">
@@ -98,7 +82,7 @@ const AccountabilityCard = ({
       </div>
       <div className="flex items-center gap-x-6">
         <div className="hidden min-w-max sm:flex sm:flex-col sm:items-end">
-          <p className="text-sm leading-6 text-gray-900">{goal.weight}</p>
+          {/* <p className="text-sm leading-6 text-gray-900">{goal.weight}</p> */}
 
           <p className="ml-8 mt-1 text-xs leading-5 text-gray-400">
             {timeSinceModifiedString(goal)}

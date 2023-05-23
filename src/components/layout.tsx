@@ -1,20 +1,11 @@
-import { type NextPage } from "next";
-import Link from "next/link";
-
-import { api } from "~/utils/api";
-import { UserButton, useUser } from "@clerk/nextjs";
-import { Component, useState } from "react";
-
-import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { UserButton } from "@clerk/nextjs";
+import { Disclosure} from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
+import type { ReactNode } from "react";
+import { classNames } from "~/utils/shared/functions";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-const Layout: Component = ({ children }) => {
+const Layout = ({ children }: {children: ReactNode}) => {
 
   const router = useRouter();
 
@@ -162,5 +153,5 @@ function getHeaderFromPath(string: string) {
   });
   const lastElement = filteredArray[filteredArray.length - 1];
 
-  return capitalizeFirstLetter(lastElement);
+  return lastElement ? capitalizeFirstLetter(lastElement) : "";
 }

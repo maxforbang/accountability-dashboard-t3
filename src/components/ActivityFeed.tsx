@@ -1,16 +1,8 @@
-import { Listbox, Transition } from "@headlessui/react";
 import {
   CheckCircleIcon,
-  FaceFrownIcon,
-  FaceSmileIcon,
-  FireIcon,
-  HandThumbUpIcon,
-  HeartIcon,
-  PaperClipIcon,
-  XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
-import { Component, useState, Fragment } from "react";
 import CommentForm from "./CommentForm";
+import { classNames } from "~/utils/shared/functions";
 
 const activity = [
   {
@@ -63,58 +55,7 @@ const activity = [
   },
 ];
 
-const moods = [
-  {
-    name: "Excited",
-    value: "excited",
-    icon: FireIcon,
-    iconColor: "text-white",
-    bgColor: "bg-red-500",
-  },
-  {
-    name: "Loved",
-    value: "loved",
-    icon: HeartIcon,
-    iconColor: "text-white",
-    bgColor: "bg-pink-400",
-  },
-  {
-    name: "Happy",
-    value: "happy",
-    icon: FaceSmileIcon,
-    iconColor: "text-white",
-    bgColor: "bg-green-400",
-  },
-  {
-    name: "Sad",
-    value: "sad",
-    icon: FaceFrownIcon,
-    iconColor: "text-white",
-    bgColor: "bg-yellow-400",
-  },
-  {
-    name: "Thumbsy",
-    value: "thumbsy",
-    icon: HandThumbUpIcon,
-    iconColor: "text-white",
-    bgColor: "bg-blue-500",
-  },
-  {
-    name: "I feel nothing",
-    value: null,
-    icon: XMarkIconMini,
-    iconColor: "text-gray-400",
-    bgColor: "bg-transparent",
-  },
-];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
 const ActivityFeed = () => {
-  const [selected, setSelected] = useState(moods[5]);
-
   return (
     <>
       <h2 className="text-sm font-semibold leading-6 text-gray-900">

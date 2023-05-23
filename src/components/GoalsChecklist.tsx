@@ -12,28 +12,20 @@
   }
   ```
 */
-import { AccountabilityPeriod, Goal } from "@prisma/client";
+import type { Goal } from "@prisma/client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { useState } from "react";
 import { api } from "~/utils/api";
 import { timeSinceModifiedString } from "~/utils/shared/functions";
 dayjs.extend(relativeTime);
 
 interface GoalsCheckListProps {
   goals: Goal[];
-  teamId;
-  userId;
-  date;
-  type;
+
 }
 
 const GoalsChecklist = ({
   goals,
-  teamId,
-  userId,
-  date,
-  type,
 }: GoalsCheckListProps) => {
   const ctx = api.useContext();
 
@@ -43,55 +35,9 @@ const GoalsChecklist = ({
     },
   });
 
-  const addMutation = api.msg.add.useMutation({
-    onMutate: async (newMessage) => {
-      await utils.msg.list.cancel();
-      const previousMessages = utils.msg.list.getData();
-      // Define a new temp message because it doesnt have all the fields
-      const tempMessage: Message = {
-        ...newMessage,
-        id: Math.random().toString(),
-        imageUrl: "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        imageKey: null, // change undefined to null because ts complained
-      };
-      utils.msg.list.setData(
-        {
-          take: 5, // please explain what this does.
-        },
-        (old) => {
-          if (!old) return;
-          const newMessages = [...old.messages, tempMessage];
-          return {
-            messages: newMessages,
-            nextCursor: old.nextCursor,
-          };
-        }
-      );
-
-      return { previousMessages };
-    },
-
-    onError: (err, newMessage, context) => {
-      if (context?.previousMessages) {
-        utils.msg.list.setData(
-          {
-            take: 5,
-          },
-          context.previousMessages
-        );
-      }
-    },
-
-    onSuccess: async () => {
-      await utils.msg.list.invalidate();
-    },
-  });
-
   const rows = goals.map((goal) => {
     return (
-      <div className="relative flex items-center pb-4 pt-3.5">
+      <div className="relative flex items-center pb-4 pt-3.5" key={`goal-${goal.id}`}>
         <div className="min-w-0 flex-1 text-sm leading-6">
           <label htmlFor="comments" className="font-medium text-gray-900">
             {goal.content}
@@ -121,7 +67,7 @@ const GoalsChecklist = ({
   });
 
   const latestUpdatedGoal = goals.reduce((previousGoal, currentGoal) => {
-    return currentGoal.updatedAt > previousGoal.updatedAt
+    return currentGoal.updatedAt > (previousGoal ? previousGoal.updatedAt : 0)
       ? currentGoal
       : previousGoal;
   }, goals.at(0));

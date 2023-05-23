@@ -1,17 +1,17 @@
-import { Component, useState } from "react";
-import { RouterOutputs, api } from "~/utils/api";
+import { useState } from "react";
+import { api } from "~/utils/api";
 import GoalsChecklist from "./GoalsChecklist";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import EditGoalsChecklist from "./EditGoalsChecklist";
 import { useUser } from "@clerk/nextjs";
-//import { AccountabilityType } from "@prisma/client";
+import { classNames } from "~/utils/shared/functions";
+import type { AccountabilityPeriod, Goal } from "@prisma/client";
 
-const dateFormatOptions = {
+const dateFormatOptions: Intl.DateTimeFormatOptions = {
   month: "long",
   day: "numeric",
-  suffix: "long",
 };
 
 interface AccountabilityProps {
@@ -21,12 +21,8 @@ interface AccountabilityProps {
   type: string | undefined;
 }
 
-type AccountabilityGoals =
-  RouterOutputs["goals"]["getUserGoalsForCurrentAccountabilityPeriod"];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+// type AccountabilityGoals =
+//   RouterOutputs["goals"]["getUserGoalsForCurrentAccountabilityPeriod"];
 
 const SelfAccountabilityCard = ({
   teamId,
@@ -36,10 +32,6 @@ const SelfAccountabilityCard = ({
 }: AccountabilityProps) => {
   const ctx = api.useContext();
   const { user } = useUser();
-
-  if (!user) {
-    return null;
-  }
 
   const { mutate: markAllComplete } = api.goals.markAllComplete.useMutation({
     onSuccess: () => {
@@ -53,7 +45,7 @@ const SelfAccountabilityCard = ({
     },
   });
 
-  const { data: { goals = [], accountabilityPeriod = {} } = {} } =
+  const { data: { goals = [] as Goal[], accountabilityPeriod = {} as AccountabilityPeriod} = {} } =
     api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
       teamId,
       userId,
@@ -62,6 +54,10 @@ const SelfAccountabilityCard = ({
     });
 
   const [editMode, setEditMode] = useState(false);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
@@ -72,7 +68,7 @@ const SelfAccountabilityCard = ({
               id="message-heading"
               className="text-4xl font-semibold text-gray-900 "
             >
-              {type[0] + type.slice(1, type.length).toLowerCase()} Goals
+              {`${type[0] ?? ""}${type.slice(1, type.length).toLowerCase() ?? ""}`} Goals
             </h1>
             <p className="ml-1 mt-2 truncate text-xl text-gray-500">
               {accountabilityPeriod?.startDay?.toLocaleDateString(
@@ -81,7 +77,7 @@ const SelfAccountabilityCard = ({
               )}{" "}
               -{" "}
               {accountabilityPeriod?.endDay?.toLocaleDateString(
-                "en-US",
+                undefined,
                 dateFormatOptions
               )}
             </p>
@@ -280,7 +276,7 @@ const SelfAccountabilityCard = ({
           accountabilityPeriod={accountabilityPeriod}
         />
       ) : (
-        <GoalsChecklist goals={goals} teamId userId date type />
+        <GoalsChecklist goals={goals} />
       )}
     </>
   );
