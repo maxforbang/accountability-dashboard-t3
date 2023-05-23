@@ -45,28 +45,31 @@ const SelfAccountabilityCard = ({
     },
   });
 
-  const { data: { goals = [] as Goal[], accountabilityPeriod = {} as AccountabilityPeriod} = {}, isSuccess } =
-    api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
-      teamId,
-      userId,
-      selectedDate: date,
-      type,
-      
-    });
+  const {
+    data: {
+      goals = [] as Goal[],
+      accountabilityPeriod = {} as AccountabilityPeriod,
+    } = {},
+    isSuccess,
+  } = api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
+    teamId,
+    userId,
+    selectedDate: date,
+    type,
+  });
 
   const [editMode, setEditMode] = useState(false);
 
-  
   useEffect(() => {
     if (isSuccess && goals.length === 0) {
       setEditMode(true);
     }
   }, [isSuccess]);
-  
+
   if (!user) {
     return null;
   }
-  
+
   return (
     <>
       <div className="border-b border-gray-200 px-3 pb-8 sm:px-0">
@@ -76,7 +79,10 @@ const SelfAccountabilityCard = ({
               id="message-heading"
               className="text-4xl font-semibold text-gray-900 "
             >
-              {`${type[0] ?? ""}${type.slice(1, type.length).toLowerCase() ?? ""}`} Goals
+              {`${type[0] ?? ""}${
+                type.slice(1, type.length).toLowerCase() ?? ""
+              }`}{" "}
+              Goals
             </h1>
             <p className="ml-1 mt-2 truncate text-xl text-gray-500">
               {accountabilityPeriod?.startDay?.toLocaleDateString(

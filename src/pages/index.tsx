@@ -23,7 +23,9 @@ const Dashboard: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>{`Dashboard | ${user.publicMetadata["currentTeamName"] as string}`}</title>
+        <title>{`Dashboard | ${
+          user.publicMetadata["currentTeamName"] as string
+        }`}</title>
         <meta
           name="description"
           content="Accountability Dashboard. View goals and compare achievements weekly."
@@ -32,43 +34,43 @@ const Dashboard: NextPageWithLayout = () => {
       </Head>
       <main>
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
-            <div className="-mx-4 rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 lg:col-span-1 lg:col-start-3 lg:row-span-1 lg:row-end-1 xl:px-8 xl:pb-6 xl:pt-8">
-              <SelfAccountabilityCard
-                teamId={user.publicMetadata["currentTeamId"] as string}
-                userId={user.id}
-                date={new Date()}
-                type="QUARTER"
-              />
+          <div className="mx-auto flex flex-col items-start gap-8 lg:mx-0 lg:flex-row ">
+            <div className="flex w-full flex-col lg:order-2 lg:basis-7/12">
+              <div className="rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6 xl:pt-12">
+                <SelfAccountabilityCard
+                  teamId={user.publicMetadata["currentTeamId"] as string}
+                  userId={user.id}
+                  date={new Date()}
+                  type="QUARTER"
+                />
+              </div>
+              <div>{/* <ActivityFeed /> */}</div>
             </div>
-
-            <div className="-mx-4 rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-end-2 xl:px-12 xl:pb-6 xl:pt-12">
-              <SelfAccountabilityCard
-                teamId={user.publicMetadata["currentTeamId"] as string}
-                userId={user.id}
-                date={new Date()}
-                type="WEEK"
-              />
-            </div>
-            {memberships.map((member) => {
-              const memberUser = users.find(
-                (user) => user.id === member.userId
-              );
-              return (
-                memberUser && (
-                  <AccountabilityCard
-                    user={memberUser}
-                    membership={member}
-                    teamId={member.teamId}
-                    date={new Date()}
-                    type="WEEK"
-                  />
-                )
-              );
-            })}
-
-            <div className="lg:col-start-3 lg:row-start-2">
-              {/* <ActivityFeed /> */}
+            <div className="flex w-full flex-col gap-8 ">
+              <div className="rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6 xl:pt-12">
+                <SelfAccountabilityCard
+                  teamId={user.publicMetadata["currentTeamId"] as string}
+                  userId={user.id}
+                  date={new Date()}
+                  type="WEEK"
+                />
+              </div>
+              {memberships.map((member) => {
+                const memberUser = users.find(
+                  (user) => user.id === member.userId
+                );
+                return (
+                  memberUser && (
+                    <AccountabilityCard
+                      user={memberUser}
+                      membership={member}
+                      teamId={member.teamId}
+                      date={new Date()}
+                      type="WEEK"
+                    />
+                  )
+                );
+              })}
             </div>
           </div>
         </div>
