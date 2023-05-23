@@ -56,16 +56,17 @@ const SelfAccountabilityCard = ({
 
   const [editMode, setEditMode] = useState(false);
 
-  if (!user) {
-    return null;
-  }
-
+  
   useEffect(() => {
     if (isSuccess && goals.length === 0) {
       setEditMode(true);
     }
   }, [isSuccess]);
-
+  
+  if (!user) {
+    return null;
+  }
+  
   return (
     <>
       <div className="border-b border-gray-200 px-3 pb-8 sm:px-0">
