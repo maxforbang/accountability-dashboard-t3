@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import GoalsChecklist from "./GoalsChecklist";
 import { Fragment } from "react";
@@ -45,12 +45,13 @@ const SelfAccountabilityCard = ({
     },
   });
 
-  const { data: { goals = [] as Goal[], accountabilityPeriod = {} as AccountabilityPeriod} = {} } =
+  const { data: { goals = [] as Goal[], accountabilityPeriod = {} as AccountabilityPeriod} = {}, isSuccess } =
     api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
       teamId,
       userId,
       selectedDate: date,
       type,
+      
     });
 
   const [editMode, setEditMode] = useState(false);
@@ -58,6 +59,12 @@ const SelfAccountabilityCard = ({
   if (!user) {
     return null;
   }
+
+  useEffect(() => {
+    if (isSuccess && goals.length === 0) {
+      setEditMode(true);
+    }
+  }, [isSuccess]);
 
   return (
     <>
