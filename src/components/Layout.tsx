@@ -1,6 +1,7 @@
 import { UserButton } from "@clerk/nextjs";
 import { Disclosure} from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import type { ReactNode } from "react";
 import { classNames } from "~/utils/shared/functions";
@@ -45,7 +46,7 @@ const Layout = ({ children }: {children: ReactNode}) => {
                         <div className="hidden md:block">
                           <div className="ml-10 flex items-baseline space-x-4">
                             {navigation.map((item) => (
-                              <a
+                              <Link
                                 key={item.name}
                                 href={item.href}
                                 className={classNames(
@@ -57,7 +58,7 @@ const Layout = ({ children }: {children: ReactNode}) => {
                                 aria-current={item.current ? "page" : undefined}
                               >
                                 {item.name}
-                              </a>
+                              </Link>
                             ))}
                           </div>
                         </div>
