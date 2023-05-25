@@ -21,12 +21,10 @@ dayjs.extend(relativeTime);
 
 interface GoalsCheckListProps {
   goals: Goal[];
-
+  editable?: boolean;
 }
 
-const GoalsChecklist = ({
-  goals,
-}: GoalsCheckListProps) => {
+const GoalsChecklist = ({ goals, editable = true }: GoalsCheckListProps) => {
   const ctx = api.useContext();
 
   const { mutate: toggleCompleted } = api.goals.toggleCompleted.useMutation({
@@ -37,7 +35,10 @@ const GoalsChecklist = ({
 
   const rows = goals.map((goal) => {
     return (
-      <div className="relative flex items-center pb-4 pt-3.5" key={`goal-${goal.id}`}>
+      <div
+        className="relative flex items-center pb-4 pt-3.5"
+        key={`goal-${goal.id}`}
+      >
         <div className="min-w-0 flex-1 text-sm leading-6">
           <label htmlFor="comments" className="font-medium text-gray-900">
             {goal.content}
@@ -46,22 +47,24 @@ const GoalsChecklist = ({
             {goal.description}
           </p>
         </div>
-        <div className="ml-3 flex h-6 items-center">
-          <input
-            id="comments"
-            aria-describedby="comments-description"
-            name="comments"
-            type="checkbox"
-            className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-indigo-600"
-            checked={goal.completed}
-            onChange={() =>
-              toggleCompleted({
-                goalId: goal.id,
-                completed: !goal.completed,
-              })
-            }
-          />
-        </div>
+        {editable && (
+          <div className="ml-3 flex h-6 items-center">
+            <input
+              id="comments"
+              aria-describedby="comments-description"
+              name="comments"
+              type="checkbox"
+              className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-indigo-600"
+              checked={goal.completed}
+              onChange={() =>
+                toggleCompleted({
+                  goalId: goal.id,
+                  completed: !goal.completed,
+                })
+              }
+            />
+          </div>
+        )}
       </div>
     );
   });
@@ -79,7 +82,9 @@ const GoalsChecklist = ({
         <div className="divide-y divide-gray-200">{rows}</div>
       </fieldset>
       <div className="mt-5 flex justify-end text-sm">
-        <p className="text-gray-400">{timeSinceModifiedString(latestUpdatedGoal)}</p>
+        <p className="text-gray-400">
+          {timeSinceModifiedString(latestUpdatedGoal)}
+        </p>
       </div>
     </>
   );

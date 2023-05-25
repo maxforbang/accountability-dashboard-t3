@@ -23,9 +23,9 @@ const Dashboard: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>{`Dashboard | ${
-          user.publicMetadata["currentTeamName"] as string
-        }`}</title>
+        <title>
+          {`Dashboard | ${user.publicMetadata["currentTeamName"] as string}`}
+        </title>
         <meta
           name="description"
           content="Accountability Dashboard. View goals and compare achievements weekly."
@@ -36,18 +36,19 @@ const Dashboard: NextPageWithLayout = () => {
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="mx-auto flex flex-col items-start gap-8 lg:mx-0 lg:flex-row ">
             <div className="flex w-full flex-col lg:order-2 lg:basis-7/12">
-              <div className="rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6 xl:pt-12">
+              <div className="rounded-lg bg-gray-50 px-8 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6 xl:pt-12">
                 <SelfAccountabilityCard
                   teamId={user.publicMetadata["currentTeamId"] as string}
                   userId={user.id}
                   date={new Date()}
                   type="QUARTER"
+                  editable={false}
                 />
               </div>
               <div>{/* <ActivityFeed /> */}</div>
             </div>
             <div className="flex w-full flex-col gap-8 ">
-              <div className="rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6 xl:pt-12">
+              <div className="rounded-lg bg-gray-50 px-8 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6 xl:pt-12">
                 <SelfAccountabilityCard
                   teamId={user.publicMetadata["currentTeamId"] as string}
                   userId={user.id}

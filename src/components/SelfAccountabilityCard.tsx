@@ -19,6 +19,7 @@ interface AccountabilityProps {
   userId: string;
   date: Date;
   type: string | undefined;
+  editable?: boolean;
 }
 
 // type AccountabilityGoals =
@@ -29,6 +30,7 @@ const SelfAccountabilityCard = ({
   userId,
   date,
   type = "WEEK",
+  editable = true
 }: AccountabilityProps) => {
   const ctx = api.useContext();
   const { user } = useUser();
@@ -101,7 +103,7 @@ const SelfAccountabilityCard = ({
             {/* <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
               Open
             </span> */}
-            <Menu as="div" className="relative ml-3 inline-block text-left">
+            {editable && <Menu as="div" className="relative ml-3 inline-block text-left">
               <div>
                 <Menu.Button className="-my-2 flex items-center rounded-full bg-gray-200 p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <span className="sr-only">Open options</span>
@@ -280,7 +282,7 @@ const SelfAccountabilityCard = ({
                   </div>
                 </Menu.Items>
               </Transition>
-            </Menu>
+            </Menu>}
           </div>
         </div>
       </div>
@@ -290,7 +292,7 @@ const SelfAccountabilityCard = ({
           accountabilityPeriod={accountabilityPeriod}
         />
       ) : (
-        <GoalsChecklist goals={goals} />
+        <GoalsChecklist goals={goals} editable={editable}/>
       )}
     </>
   );

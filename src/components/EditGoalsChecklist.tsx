@@ -37,17 +37,17 @@ const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps
   });
 
   return (
-    <>
-      <fieldset className="border-b border-t border-gray-200">
-        <div className="divide-y divide-gray-200">{goalRows}</div>
+    <div className="mt-4">
+      <fieldset className="border-b border-gray-200">
         {createNewGoalMode ? <CreateGoalInput setCreateNewGoalMode={setCreateNewGoalMode} accountabilityPeriodId={accountabilityPeriod.id} /> : <NewGoalButton setCreateNewGoalMode={setCreateNewGoalMode} />}
+        <div className="divide-y divide-gray-200">{goalRows}</div>
       </fieldset>
       <div className="mt-5 flex justify-end text-sm">
         <p className="text-gray-400">
           {timeSinceModifiedString(latestUpdatedGoal)}
         </p>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -57,7 +57,7 @@ const NewGoalButton = ({setCreateNewGoalMode}: {setCreateNewGoalMode: (value: bo
   return (
     <button
       type="button"
-      className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       onClick={() => setCreateNewGoalMode(true)}
     >
       <svg

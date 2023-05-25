@@ -141,11 +141,11 @@ const AccountabilityCard = ({
 
   return (
     <>
-      <div className="-mx-4 divide-y-2 rounded-lg  bg-gray-50 shadow-sm ring-1 ring-gray-900/5  sm:mx-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 ">
+      <div className="divide-y-2 rounded-lg  bg-gray-50 shadow-sm ring-1 ring-gray-900/5  sm:mx-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 ">
         <AccountabilityHeader user={user} membership={membership} />
         <ul
           role="list"
-          className="divide-y divide-gray-100 px-4 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6"
+          className="divide-y divide-gray-100 px-8 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6"
         >
           {goalRows}
         </ul>
@@ -164,7 +164,7 @@ function AccountabilityHeader({
   membership: Membership;
 }) {
   return (
-    <div className="ml-2 h-full rounded-lg bg-gray-50 px-4 py-5 sm:px-6">
+    <div className="ml-2 h-full rounded-lg bg-gray-50 px-4 py-8 sm:px-6">
       <div className="flex space-x-3">
         <div className="flex-shrink-0">
           <img

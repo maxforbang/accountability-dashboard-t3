@@ -6,7 +6,7 @@ import Head from "next/head";
 import { useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 
-const Dashboard: NextPageWithLayout = () => {
+const Leaderboards: NextPageWithLayout = () => {
   const { user } = useUser();
 
   if (!user) {
@@ -22,8 +22,8 @@ const Dashboard: NextPageWithLayout = () => {
       </Head>
 
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto  max-w-2xl items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3 ">
-          <div className="-mx-4 rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 lg:col-span-1 lg:col-start-3 lg:row-span-1 lg:row-end-1 xl:px-8 xl:pb-6 xl:pt-8">
+        <div className="mx-auto max-w-2xl items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none ">
+          <div className="rounded-lg bg-gray-50 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:px-8 sm:pb-8 xl:px-8 xl:pb-6 xl:pt-8">
             <Leaderboard />
           </div>
         </div>
@@ -32,11 +32,11 @@ const Dashboard: NextPageWithLayout = () => {
   );
 };
 
-Dashboard.getLayout = function getLayout(page: ReactElement) {
+Leaderboards.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };
 
-export default Dashboard;
+export default Leaderboards;
 
 function Leaderboard() {
 

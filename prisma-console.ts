@@ -6,47 +6,29 @@ async function main() {
   const goalCreationInfo = await prisma.goal.createMany({
     data: [
       {
-        content: 'Chadscale Amazon operations',
-        description: 'Hire multiple employees to do the dirty',
+        content: '$40k/mo Online Arbitrage',
+        description: '',
         completed: false,
         weight: null,
-        userId: 'user_2PcPM8gxT9IMUPBI8yq0KnluTmm',
-        accountabilityPeriodId: 'clhmi0dvn0000p0j4rn7tulet'
+        userId: 'user_2PcPLD4cCl4solXYo6RJ1blzEfd',
+        accountabilityPeriodId: 'cli2eoegs0000p0g6lhjluivm'
       },
       {
-        content: 'Perform high \'fish activity',
-        description: 'Enact laser focus towards a single purpose',
+        content: '$20k/mo Wholesale & Private Label',
+        description: '',
         completed: false,
         weight: null,
-        userId: 'user_2PcPM8gxT9IMUPBI8yq0KnluTmm',
-        accountabilityPeriodId: 'clhmi0dvn0000p0j4rn7tulet'
+        userId: 'user_2PcPLD4cCl4solXYo6RJ1blzEfd',
+        accountabilityPeriodId: 'cli2eoegs0000p0g6lhjluivm'
       },
       {
-        content: 'Systematize business operations',
-        description: 'Leverage computers to streamline tedious chores',
+        content: '$10k/mo Sales Commissions',
+        description: '',
         completed: false,
         weight: null,
-        userId: 'user_2PcPM8gxT9IMUPBI8yq0KnluTmm',
-        accountabilityPeriodId: 'clhmi0dvn0000p0j4rn7tulet'
+        userId: 'user_2PcPLD4cCl4solXYo6RJ1blzEfd',
+        accountabilityPeriodId: 'cli2eoegs0000p0g6lhjluivm'
       },
-      {
-        content: 'Network with high value individual',
-        description: 'Facillitate massive gains from trade',
-        completed: false,
-        weight: null,
-        userId: 'user_2PcPM8gxT9IMUPBI8yq0KnluTmm',
-        accountabilityPeriodId: 'clhmi0dvn0000p0j4rn7tulet'
-      },
-      {
-        content: 'Offer skillsets to wealthy patron',
-        description: 'Evolve society through creative business endeavors',
-        completed: false,
-        weight: null,
-        userId: 'user_2PcPM8gxT9IMUPBI8yq0KnluTmm',
-        accountabilityPeriodId: 'clhmi0dvn0000p0j4rn7tulet'
-      },
-
-
       
     ]
   });

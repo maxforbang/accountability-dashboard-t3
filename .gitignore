@@ -3,6 +3,9 @@
 # jetbrains
 .idea/
 
+# mocksups/wireframes
+/design
+
 # dependencies
 /node_modules
 /.pnp

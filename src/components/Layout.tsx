@@ -11,8 +11,8 @@ const Layout = ({ children }: {children: ReactNode}) => {
 
   const navigation = [
     { name: "Dashboard", href: "/", current: router.asPath == "/" },
-    // { name: "Goals", href: "/goals", current: router.asPath == "/goals" },
-    { name: "Leaderboard", href: "/leaderboard", current: router.asPath == "/leaderboard" },
+    { name: "Goals", href: "/goals", current: router.asPath == "/goals" },
+    { name: "Leaderboards", href: "/leaderboards", current: router.asPath == "/leaderboards" },
 
   ];
 
