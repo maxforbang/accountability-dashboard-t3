@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/nextjs";
+import { isMonday, isSunday, nextSunday, previousMonday } from "date-fns";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -63,6 +64,12 @@ export const goalsRouter = createTRPCRouter({
         await ctx.prisma.accountabilityPeriod.findFirst({
           where: {
             teamId: input.teamId,
+            startDay: {
+              lte: input.selectedDate
+            },
+            endDay: {
+              gt: input.selectedDate
+            },
             //startDay and endDay encompass selected date
             type: input.type,
           },
@@ -80,6 +87,17 @@ export const goalsRouter = createTRPCRouter({
         });
 
         return { goals, accountabilityPeriod: currentAccountabilityPeriod };
+      } else {
+        console.log('None exists')
+        const accountabilityPeriod = await prisma.accountabilityPeriod.create({
+          data: {
+            startDay: isMonday(input.selectedDate) ? input.selectedDate : previousMonday(input.selectedDate),
+            endDay: isSunday(input.selectedDate) ? input.selectedDate : nextSunday(input.selectedDate),
+            type: input.type,
+            teamId: input.teamId,
+          },
+        })
+        return { goals: [], accountabilityPeriod };
       }
     }),
   toggleCompleted: publicProcedure

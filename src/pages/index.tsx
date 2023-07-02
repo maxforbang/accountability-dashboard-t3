@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import { useState, type ReactElement } from "react";
 import Layout from "~/components/Layout";
 import type { NextPageWithLayout } from "./_app";
 import Head from "next/head";
@@ -20,6 +20,9 @@ const Dashboard: NextPageWithLayout = () => {
       teamId: user.publicMetadata["currentTeamId"] as string,
     });
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  console.log(setSelectedDate)
+
   return (
     <>
       <Head>
@@ -40,9 +43,10 @@ const Dashboard: NextPageWithLayout = () => {
                 <SelfAccountabilityCard
                   teamId={user.publicMetadata["currentTeamId"] as string}
                   userId={user.id}
-                  date={new Date()}
+                  date={selectedDate}
                   type="QUARTER"
                   editable={false}
+                  setSelectedDate={setSelectedDate}
                 />
               </div>
               <div>{/* <ActivityFeed /> */}</div>
@@ -52,8 +56,9 @@ const Dashboard: NextPageWithLayout = () => {
                 <SelfAccountabilityCard
                   teamId={user.publicMetadata["currentTeamId"] as string}
                   userId={user.id}
-                  date={new Date()}
+                  date={selectedDate}
                   type="WEEK"
+                  setSelectedDate={setSelectedDate}
                 />
               </div>
               {memberships.map((member) => {
@@ -66,7 +71,7 @@ const Dashboard: NextPageWithLayout = () => {
                       user={memberUser}
                       membership={member}
                       teamId={member.teamId}
-                      date={new Date()}
+                      date={selectedDate}
                       type="WEEK"
                     />
                   )

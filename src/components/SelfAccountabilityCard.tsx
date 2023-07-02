@@ -8,6 +8,8 @@ import EditGoalsChecklist from "./EditGoalsChecklist";
 import { useUser } from "@clerk/nextjs";
 import { classNames } from "~/utils/shared/functions";
 import type { AccountabilityPeriod, Goal } from "@prisma/client";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { addDays, nextSunday, previousMonday, subDays } from "date-fns";
 
 const dateFormatOptions: Intl.DateTimeFormatOptions = {
   month: "long",
@@ -20,6 +22,7 @@ interface AccountabilityProps {
   date: Date;
   type: string | undefined;
   editable?: boolean;
+  setSelectedDate: (state: Date) => void;
 }
 
 // type AccountabilityGoals =
@@ -31,6 +34,7 @@ const SelfAccountabilityCard = ({
   date,
   type = "WEEK",
   editable = true,
+  setSelectedDate,
 }: AccountabilityProps) => {
   const ctx = api.useContext();
   const { user } = useUser();
@@ -72,31 +76,39 @@ const SelfAccountabilityCard = ({
     return null;
   }
 
+  console.log(date)
+  console.log(previousMonday(date))
+  console.log(nextSunday(date))
+
   return (
     <>
       <div className="border-b border-gray-200 px-3 pb-8 sm:px-0">
         <div className="flex sm:flex sm:items-baseline sm:justify-between">
-          <div className="min-w-5 sm:w-0 sm:flex-1">
-            <h1
-              id="message-heading"
-              className="text-4xl font-semibold text-gray-900 "
-            >
-              {`${type[0] ?? ""}${
-                type.slice(1, type.length).toLowerCase() ?? ""
-              }`}{" "}
-              Goals
-            </h1>
-            <p className="ml-1 mt-2 truncate text-xl text-gray-500">
-              {accountabilityPeriod?.startDay?.toLocaleDateString(
-                undefined,
-                dateFormatOptions
-              )}{" "}
-              -{" "}
-              {accountabilityPeriod?.endDay?.toLocaleDateString(
-                undefined,
-                dateFormatOptions
-              )}
-            </p>
+          <div className="flex w-full items-center gap-5">
+            <ChevronLeftIcon className="h-8 cursor-pointer" onClick={() => setSelectedDate(subDays(date, 7))}/>
+            <div className="min-w-5 ">
+              <h1
+                id="message-heading"
+                className="text-4xl font-semibold text-gray-900 "
+              >
+                {`${type[0] ?? ""}${
+                  type.slice(1, type.length).toLowerCase() ?? ""
+                }`}{" "}
+                Goals
+              </h1>
+              <p className="ml-1 mt-2 truncate text-xl text-gray-500">
+                {accountabilityPeriod?.startDay?.toLocaleDateString(
+                  undefined,
+                  dateFormatOptions
+                )}{" "}
+                -{" "}
+                {accountabilityPeriod?.endDay?.toLocaleDateString(
+                  undefined,
+                  dateFormatOptions
+                )}
+              </p>
+            </div>
+            <ChevronRightIcon className="h-8 cursor-pointer" onClick={() => setSelectedDate(addDays(date, 7))}/>
           </div>
 
           <div className="ml-auto mt-4 flex sm:ml-6 sm:mt-0 sm:flex-shrink-0 sm:justify-start ">
