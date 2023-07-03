@@ -11,24 +11,19 @@ import type { AccountabilityPeriod, Goal } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { addDays, getQuarter, subDays } from "date-fns";
 import { formatAccountabilityRangeFromDate } from "../utils/shared/formatAccountabilityRangeFromDate";
-import { newDateFromInterval } from "~/utils/shared/newDateFromInterval";
-
-const dateFormatOptions: Intl.DateTimeFormatOptions = {
-  month: "long",
-  day: "numeric",
-};
+import { dateFromInterval } from "~/utils/shared/dateFromInterval";
+import { ProgressBar } from "./ProgressBar";
+import CancellationConfirmation from "./CancellationConfirmation";
+import { calculateCompletionPercentage } from "~/utils/shared/calculateCompletionPercentage";
 
 interface AccountabilityProps {
   teamId: string;
   userId: string;
   date: Date;
-  type: 'WEEK' | 'QUARTER' | 'YEAR';
+  type: "WEEK" | "QUARTER" | "YEAR";
   editable?: boolean;
   setSelectedDate: (state: Date) => void;
 }
-
-// type AccountabilityGoals =
-//   RouterOutputs["goals"]["getUserGoalsForCurrentAccountabilityPeriod"];
 
 const SelfAccountabilityCard = ({
   teamId,
@@ -53,26 +48,25 @@ const SelfAccountabilityCard = ({
     },
   });
 
-  const {
-    data: {
-      goals = [] as Goal[],
-      accountabilityPeriod = {} as AccountabilityPeriod,
-    } = {},
-    isSuccess,
-  } = api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
-    teamId,
-    userId,
-    selectedDate: date,
-    type,
-  });
+  const { data: { goals = [] as Goal[] } = {}, isSuccess } =
+    api.goals.getUserGoalsForCurrentAccountabilityPeriod.useQuery({
+      teamId,
+      userId,
+      selectedDate: date,
+      type,
+    });
 
   const [editMode, setEditMode] = useState(false);
+  const [cancellationConfirmationOpen, setCancellationConfirmationOpen] =
+    useState(false);
 
   useEffect(() => {
-    if (isSuccess && goals.length === 0) {
-      setEditMode(true);
+    if (editable && isSuccess) {
+      if (goals.length === 0 && !editMode) {
+        setEditMode(true);
+      }
     }
-  }, [isSuccess]);
+  }, [isSuccess, date]);
 
   if (!user) {
     return null;
@@ -80,29 +74,35 @@ const SelfAccountabilityCard = ({
 
   return (
     <>
-      <div className="border-b border-gray-200 px-3 pb-8 sm:px-0">
+      <div className=" border-gray-200 px-3 pb-8 sm:px-0">
         <div className="relative flex sm:flex sm:items-baseline sm:justify-between">
-          <div className="flex w-full items-center justify-between gap-5">
+          <div className="flex w-full items-center justify-center gap-6 sm:justify-between">
             <ChevronLeftIcon
               className="h-8 cursor-pointer"
-              onClick={() => setSelectedDate(newDateFromInterval(date, type, 'decrease'))}
+              onClick={() =>
+                setSelectedDate(dateFromInterval(date, type, "decrease"))
+              }
             />
             <div className="min-w-5 ">
               <h1
                 id="message-heading"
                 className="text-center text-4xl font-semibold text-gray-900 "
               >
-                {type === 'QUARTER' ? `Quarter ${getQuarter(date)}` : `${type[0] ?? ""}${
-                  type.slice(1, type.length).toLowerCase() ?? ""
-                } Goals`}
+                {type === "QUARTER"
+                  ? `Quarter ${getQuarter(date)}`
+                  : `${type[0] ?? ""}${
+                      type.slice(1, type.length).toLowerCase() ?? ""
+                    } Goals`}
               </h1>
               <p className="ml-1 mt-2 truncate text-center text-xl text-gray-500">
                 {formatAccountabilityRangeFromDate(date, type)}
               </p>
             </div>
             <ChevronRightIcon
-              className="h-8 cursor-pointer"
-              onClick={() => setSelectedDate(newDateFromInterval(date, type, 'increase'))}
+              className="h-8 cursor-pointer "
+              onClick={() =>
+                setSelectedDate(dateFromInterval(date, type, "increase"))
+              }
             />
           </div>
 
@@ -227,17 +227,13 @@ const SelfAccountabilityCard = ({
                             )}
                             onClick={
                               editMode
-                                ? () =>
-                                    deleteAllGoals({
-                                      userId: user.id,
-                                      accountabilityPeriodId:
-                                        accountabilityPeriod.id,
-                                    })
+                                ? () => setCancellationConfirmationOpen(true)
                                 : () =>
                                     markAllComplete({
+                                      teamId: teamId,
                                       userId: user.id,
-                                      accountabilityPeriodId:
-                                        accountabilityPeriod.id,
+                                      type: type,
+                                      selectedDate: date,
                                     })
                             }
                           >
@@ -293,14 +289,36 @@ const SelfAccountabilityCard = ({
             </div>
           )}
         </div>
+        <div className="-mb-4 mt-8">
+          <ProgressBar percentage={calculateCompletionPercentage(goals)} />
+        </div>
       </div>
       {editMode ? (
-        <EditGoalsChecklist
-          goals={goals}
-          accountabilityPeriod={accountabilityPeriod}
-        />
+        <>
+          <CancellationConfirmation
+            title="Delete All Goals"
+            caption="Are you sure you want to delete all your goals for this accountability period? This cannot be undone."
+            actionText="Delete Goals"
+            open={cancellationConfirmationOpen}
+            setOpen={setCancellationConfirmationOpen}
+            action={() =>
+              deleteAllGoals({
+                teamId: teamId,
+                userId: user.id,
+                type: type,
+                selectedDate: date,
+              })
+            }
+          />
+          <EditGoalsChecklist
+            goals={goals}
+            teamId={teamId}
+            date={date}
+            type={type}
+          />
+        </>
       ) : (
-        <GoalsChecklist goals={goals} editable={editable} />
+        <GoalsChecklist goals={goals} editable={editable} type={type} />
       )}
     </>
   );

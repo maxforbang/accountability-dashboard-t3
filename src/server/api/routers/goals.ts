@@ -1,32 +1,34 @@
 import { clerkClient } from "@clerk/nextjs";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { isMonday, isSunday, nextSunday, previousMonday } from "date-fns";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { intervalFromDate } from "~/utils/shared/intervalFromDate";
 
 export const goalsRouter = createTRPCRouter({
   getTeam: publicProcedure
-  .input(
-    z.object({
-      teamId: z.string(),
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    const memberships = await ctx.prisma.membership.findMany({
-      where: {
-        teamId: input.teamId,
-      },
-      orderBy: {
-        pigEars: "desc"
-      }
-    });
+    .input(
+      z.object({
+        teamId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const memberships = await ctx.prisma.membership.findMany({
+        where: {
+          teamId: input.teamId,
+        },
+        orderBy: {
+          pigEars: "desc",
+        },
+      });
 
-    const users = await clerkClient.users.getUserList({
-      userId: memberships.map(member => member.userId)
-    })
+      const users = await clerkClient.users.getUserList({
+        userId: memberships.map((member) => member.userId),
+      });
 
-    return {memberships, users};
-  }),
+      return { memberships, users };
+    }),
   getTeammates: publicProcedure
     .input(
       z.object({
@@ -45,10 +47,10 @@ export const goalsRouter = createTRPCRouter({
       });
 
       const users = await clerkClient.users.getUserList({
-        userId: memberships.map(member => member.userId)
-      })
+        userId: memberships.map((member) => member.userId),
+      });
 
-      return {memberships, users};
+      return { memberships, users };
     }),
   getUserGoalsForCurrentAccountabilityPeriod: publicProcedure
     .input(
@@ -60,44 +62,24 @@ export const goalsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const currentAccountabilityPeriod =
-        await ctx.prisma.accountabilityPeriod.findFirst({
-          where: {
-            teamId: input.teamId,
-            startDay: {
-              lte: input.selectedDate
-            },
-            endDay: {
-              gt: input.selectedDate
-            },
-            //startDay and endDay encompass selected date
-            type: input.type,
-          },
-          orderBy: {
-            startDay: "desc",
-          },
-        });
+      const accountabilityPeriod = await getAccountabilityPeriod(
+        ctx.prisma,
+        input.teamId,
+        input.selectedDate,
+        input.type
+      );
 
-      if (currentAccountabilityPeriod) {
+      if (accountabilityPeriod) {
         const goals = await ctx.prisma.goal.findMany({
           where: {
-            accountabilityPeriodId: currentAccountabilityPeriod.id,
+            accountabilityPeriodId: accountabilityPeriod.id,
             userId: input.userId,
           },
         });
 
-        return { goals, accountabilityPeriod: currentAccountabilityPeriod };
+        return { goals };
       } else {
-        console.log('None exists')
-        // const accountabilityPeriod = await prisma.accountabilityPeriod.create({
-        //   data: {
-        //     startDay: isMonday(input.selectedDate) ? input.selectedDate : previousMonday(input.selectedDate),
-        //     endDay: isSunday(input.selectedDate) ? input.selectedDate : nextSunday(input.selectedDate),
-        //     type: input.type,
-        //     teamId: input.teamId,
-        //   },
-        // })
-        return { goals: [], accountabilityPeriod: null };
+        return { goals: [] };
       }
     }),
   toggleCompleted: publicProcedure
@@ -121,21 +103,60 @@ export const goalsRouter = createTRPCRouter({
     .input(
       z.object({
         userId: z.string(),
-        accountabilityPeriodId: z.string(),
+        selectedDate: z.date(),
         content: z.string(),
         description: z.string(),
+        teamId: z.string(),
+        type: z.enum(["WEEK", "QUARTER", "YEAR"]),
+        weight: z.optional(z.string()),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.goal.create({
-        data: {
-          userId: input.userId,
-          accountabilityPeriodId: input.accountabilityPeriodId,
-          content: input.content,
-          description: input.description,
-          completed: false
-        },
-      });
+      let accountabilityPeriod = await getAccountabilityPeriod(
+        ctx.prisma,
+        input.teamId,
+        input.selectedDate,
+        input.type
+      );
+
+      if (!accountabilityPeriod) {
+        const { startDate, endDate } = intervalFromDate(
+          input.selectedDate,
+          input.type
+        );
+
+        try {
+          accountabilityPeriod = await prisma.accountabilityPeriod.create({
+            data: {
+              startDay: startDate,
+              endDay: endDate,
+              type: input.type,
+              teamId: input.teamId,
+            },
+          });
+        } catch (error) {
+          console.error(error);
+          throw new Error(
+            `Failed to create a new accountability period. Error: ${
+              error as string
+            }`
+          );
+        }
+      }
+
+      return (
+        accountabilityPeriod &&
+        (await ctx.prisma.goal.create({
+          data: {
+            userId: input.userId,
+            accountabilityPeriodId: accountabilityPeriod?.id,
+            content: input.content,
+            description: input.description,
+            completed: false,
+            weight: parseFloat(input.weight || '1'),
+          },
+        }))
+      );
     }),
   updateGoal: publicProcedure
     .input(
@@ -143,6 +164,7 @@ export const goalsRouter = createTRPCRouter({
         goalId: z.string(),
         content: z.string(),
         description: z.string(),
+        weight: z.optional(z.string()),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -153,6 +175,7 @@ export const goalsRouter = createTRPCRouter({
         data: {
           content: input.content,
           description: input.description,
+          weight: parseFloat(input.weight || '1'),
         },
       });
     }),
@@ -169,87 +192,85 @@ export const goalsRouter = createTRPCRouter({
         },
       });
     }),
-    markAllComplete: publicProcedure
+  markAllComplete: publicProcedure
     .input(
       z.object({
+        teamId: z.string(),
         userId: z.string(),
-        accountabilityPeriodId: z.string(),
+        selectedDate: z.date(),
+        type: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.goal.updateMany({
-        where: {
-          userId: input.userId,
-          accountabilityPeriodId: input.accountabilityPeriodId,
-        },
-        data: {
-          completed: true
-        }
-      });
+      let accountabilityPeriod = await getAccountabilityPeriod(
+        ctx.prisma,
+        input.teamId,
+        input.selectedDate,
+        input.type
+      );
+
+      return (
+        accountabilityPeriod &&
+        (await ctx.prisma.goal.updateMany({
+          where: {
+            userId: input.userId,
+            accountabilityPeriodId: accountabilityPeriod.id,
+          },
+          data: {
+            completed: true,
+          },
+        }))
+      );
     }),
-    deleteAll: publicProcedure
+  deleteAll: publicProcedure
     .input(
       z.object({
+        teamId: z.string(),
         userId: z.string(),
-        accountabilityPeriodId: z.string(),
+        selectedDate: z.date(),
+        type: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.goal.deleteMany({
-        where: {
-          userId: input.userId,
-          accountabilityPeriodId: input.accountabilityPeriodId,
-        }
-      });
+      let accountabilityPeriod = await getAccountabilityPeriod(
+        ctx.prisma,
+        input.teamId,
+        input.selectedDate,
+        input.type
+      );
+
+      return (
+        accountabilityPeriod &&
+        (await ctx.prisma.goal.deleteMany({
+          where: {
+            userId: input.userId,
+            accountabilityPeriodId: accountabilityPeriod.id,
+          },
+        }))
+      );
     }),
 });
 
-// Archived Procedures
-// ---------------------------------------------------------------------
-
-// getAllGoalsForCurrentAccountabilityPeriod: publicProcedure
-// .input(
-//   z.object({
-//     teamId: z.string(),
-//     selectedDate: z.date(),
-//   })
-// )
-// .query(async ({ ctx, input }) => {
-//   const currentAccountabilityPeriod =
-//     await ctx.prisma.accountabilityPeriod.findFirst({
-//       where: {
-//         teamId: input.teamId,
-//         //startDay and endDay encompass selected date
-//       },
-//     });
-
-//   if (currentAccountabilityPeriod) {
-//     return await ctx.prisma.goal.findMany({
-//       where: {
-//         accountabilityPeriodId: currentAccountabilityPeriod.id,
-//       },
-//     });
-//   }
-
-//   return [];
-// }),
-
-// getTeamForUser: publicProcedure
-// .input(
-//   z.object({
-//     userId: z.string(),
-//   })
-// )
-// .query(async ({ ctx, input }) => {
-//   const membership = await ctx.prisma.membership.findFirst({
-//     where: {
-//       userId: input.userId,
-//     },
-//   });
-
-//   return await ctx.prisma.team.findFirst({
-//     where: {
-//       id: membership?.teamId,
-//     },
-//   });
-// }),
+async function getAccountabilityPeriod(
+  prisma: PrismaClient<
+    Prisma.PrismaClientOptions,
+    never,
+    Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+  >,
+  teamId: string,
+  date: Date,
+  type: string
+) {
+  return await prisma.accountabilityPeriod.findFirst({
+    where: {
+      teamId: teamId,
+      startDay: {
+        lte: date,
+      },
+      endDay: {
+        gt: date,
+      },
+      type: type,
+    },
+  });
+}

@@ -2,6 +2,8 @@ import { api } from "~/utils/api";
 import { classNames, timeSinceModifiedString } from "~/utils/shared/functions";
 import type { User } from "@clerk/nextjs/dist/server";
 import type { Membership } from "@prisma/client";
+import { ProgressBar } from "./ProgressBar";
+import { calculateCompletionPercentage } from "~/utils/shared/calculateCompletionPercentage";
 
 interface AccountabilityProps {
   teamId: string;
@@ -141,12 +143,15 @@ const AccountabilityCard = ({
 
   return (
     <>
-      <div className="divide-y-2 rounded-lg  bg-gray-50 shadow-sm ring-1 ring-gray-900/5  sm:mx-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 ">
+      <div className="rounded-lg  bg-gray-50 shadow-sm ring-1 ring-gray-900/5  sm:mx-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 ">
         <AccountabilityHeader user={user} membership={membership} />
         <ul
           role="list"
           className="divide-y divide-gray-100 px-8 sm:px-8 sm:pb-8 xl:px-12 xl:pb-6"
         >
+          <div className="-mt-0.5 mb-3 ">
+            <ProgressBar percentage={calculateCompletionPercentage(goals)} />
+          </div>
           {goalRows}
         </ul>
       </div>

@@ -5,15 +5,17 @@ import { classNames } from "~/utils/shared/functions";
 
 export default function CreateGoalInput({
   setCreateNewGoalMode,
-  accountabilityPeriodId,
+  teamId,
+  date,
+  type,
 }: {
   setCreateNewGoalMode: (value: boolean) => void;
-  accountabilityPeriodId: string;
+  teamId: string;
+  date: Date;
+  type: "WEEK" | "QUARTER" | "YEAR";
 }) {
   const ctx = api.useContext();
   const { user } = useUser();
-
-
 
   const { mutate: createGoal } = api.goals.createGoal.useMutation({
     onSuccess: () => {
@@ -22,6 +24,7 @@ export default function CreateGoalInput({
   });
 
   const [goalValue, setGoalValue] = useState("");
+  const [weightValue, setWeightValue] = useState("");
   const [descriptionValue, setDescriptionValue] = useState("");
 
   if (!user) {
@@ -36,7 +39,7 @@ export default function CreateGoalInput({
         <div className="flex ">
           <div
             className={classNames(
-              "flex-1 rounded-md rounded-b-none rounded-tr-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-50 focus-within:ring-2 focus-within:ring-blue-600"
+              "flex-1 rounded-md rounded-b-none rounded-tr-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-50 focus-within:ring-2 focus-within:ring-sky-600"
             )}
           >
             <label
@@ -57,6 +60,31 @@ export default function CreateGoalInput({
               }}
             />
           </div>
+          {type === "QUARTER" && (
+            <div
+              className={classNames(
+                "w-32 rounded-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-50 focus-within:ring-2 focus-within:ring-sky-600"
+              )}
+            >
+              <label
+                htmlFor={`weight-new`}
+                className="block text-xs font-medium text-gray-900"
+              >
+                Weight
+              </label>
+              <input
+                type="text"
+                name="weight"
+                id={`weight-new`}
+                className="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                placeholder="Enter weight..."
+                value={weightValue}
+                onChange={(e) => {
+                  setWeightValue(e.target.value);
+                }}
+              />
+            </div>
+          )}
           {goalModified ? (
             <div className="flex flex-col justify-center rounded-tr-md bg-green-200 ring-1 ring-inset ring-green-500 hover:bg-green-300">
               <button
@@ -64,13 +92,15 @@ export default function CreateGoalInput({
                 onClick={() => {
                   createGoal({
                     userId: user.id,
-                    accountabilityPeriodId: accountabilityPeriodId,
+                    teamId: teamId,
                     content: goalValue,
                     description: descriptionValue,
+                    selectedDate: date,
+                    type: type,
+                    weight: weightValue,
                   });
                   setCreateNewGoalMode(false);
-                }
-                }
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -113,9 +143,10 @@ export default function CreateGoalInput({
           )}
         </div>
       </div>
+
       <div
         className={classNames(
-          "relative rounded-md rounded-t-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-10 focus-within:ring-2 focus-within:ring-blue-600"
+          "relative rounded-md rounded-t-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-10 focus-within:ring-2 focus-within:ring-sky-600"
         )}
       >
         <label

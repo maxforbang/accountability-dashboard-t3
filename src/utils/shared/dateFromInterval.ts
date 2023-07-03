@@ -1,6 +1,6 @@
 import { addWeeks, addQuarters, addYears, subWeeks, subQuarters, subYears } from 'date-fns';
 
-export function newDateFromInterval(date: Date, type: 'WEEK' | 'QUARTER' | 'YEAR', direction: 'increase' | 'decrease'): Date {
+export function dateFromInterval(date: Date, type: 'WEEK' | 'QUARTER' | 'YEAR', direction: 'increase' | 'decrease'): Date {
   switch (type) {
     case 'WEEK':
       return direction === 'increase' ? addWeeks(date, 1) : subWeeks(date, 1);

@@ -104,7 +104,7 @@ const ActivityFeed = () => {
                 <div className="relative flex h-6 w-6 flex-none items-center justify-center bg-white">
                   {activityItem.type === "paid" ? (
                     <CheckCircleIcon
-                      className="h-6 w-6 text-indigo-600"
+                      className="h-6 w-6 text-sky-600"
                       aria-hidden="true"
                     />
                   ) : (

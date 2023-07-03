@@ -45,7 +45,7 @@ model Goal {
   content     String //@db.VarChar(255)
   description String
   completed   Boolean
-  weight      Decimal?
+  weight      Decimal? @default(1)
 
   userId                 String
   accountabilityPeriodId String

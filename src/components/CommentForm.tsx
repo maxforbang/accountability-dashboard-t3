@@ -68,7 +68,7 @@ const CommentForm = () => {
           className="h-6 w-6 flex-none rounded-full bg-gray-50"
         />
         <form action="#" className="relative flex-auto">
-          <div className="overflow-hidden rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+          <div className="overflow-hidden rounded-lg pb-12 shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-sky-600">
             <label htmlFor="comment" className="sr-only">
               Add your comment
             </label>

@@ -71,7 +71,7 @@ function Leaderboard() {
         {/* <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
             type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="block rounded-md bg-sky-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-sky-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
           >
             Add user
           </button>
@@ -151,7 +151,7 @@ function Leaderboard() {
                     {/* <td className="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                       <a
                         href="#"
-                        className="text-indigo-600 hover:text-indigo-900"
+                        className="text-sky-600 hover:text-sky-900"
                       >
                         Edit<span className="sr-only">, {person.name}</span>
                       </a>

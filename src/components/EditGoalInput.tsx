@@ -3,7 +3,13 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 import { classNames } from "~/utils/shared/functions";
 
-export default function EditGoalInput({ goal }: { goal: Goal }) {
+export default function EditGoalInput({
+  goal,
+  type,
+}: {
+  goal: Goal;
+  type: "WEEK" | "QUARTER" | "YEAR";
+}) {
   const ctx = api.useContext();
 
   const { mutate: updateGoal } = api.goals.updateGoal.useMutation({
@@ -20,9 +26,10 @@ export default function EditGoalInput({ goal }: { goal: Goal }) {
 
   const [goalValue, setGoalValue] = useState(goal.content);
   const [descriptionValue, setDescriptionValue] = useState(goal.description);
+  const [weightValue, setWeightValue] = useState(goal.weight?.toString())
 
   const goalModified =
-    goal.content != goalValue || goal.description != descriptionValue;
+    goal.content != goalValue || goal.description != descriptionValue || (type === 'QUARTER' && goal.weight?.toString() != weightValue);
 
   return (
     <div className="isolate my-6 -space-y-px rounded-md bg-white shadow-sm">
@@ -51,6 +58,31 @@ export default function EditGoalInput({ goal }: { goal: Goal }) {
               }}
             />
           </div>
+          {type === "QUARTER" && (
+            <div
+              className={classNames(
+                "w-32 rounded-none px-3 pb-1.5 pt-2.5 ring-1 ring-inset ring-gray-300 focus-within:z-50 focus-within:ring-2 focus-within:ring-sky-600"
+              )}
+            >
+              <label
+                htmlFor={`weight-new`}
+                className="block text-xs font-medium text-gray-900"
+              >
+                Weight
+              </label>
+              <input
+                type="text"
+                name="weight"
+                id={`weight-new`}
+                className="block w-full border-0 p-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
+                placeholder="Enter weight..."
+                value={weightValue}
+                onChange={(e) => {
+                  setWeightValue(e.target.value);
+                }}
+              />
+            </div>
+          )}
           {goalModified ? (
             <div className="flex flex-col justify-center rounded-tr-md bg-green-200 ring-1 ring-inset ring-green-500 hover:bg-green-300">
               <button
@@ -60,6 +92,7 @@ export default function EditGoalInput({ goal }: { goal: Goal }) {
                     goalId: goal.id,
                     content: goalValue,
                     description: descriptionValue,
+                    weight: weightValue,
                   })
                 }
               >

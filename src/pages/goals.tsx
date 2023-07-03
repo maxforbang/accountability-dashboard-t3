@@ -12,12 +12,12 @@ const Dashboard: NextPageWithLayout = () => {
   const { user } = useUser();
 
   const [accountabilityType, setAccountabilityType] = useState<'WEEK' | 'QUARTER' | 'YEAR'>("YEAR");
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   if (!user) {
     return <p>Loading user...</p>;
   }
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
     <>
@@ -89,7 +89,7 @@ function Tabs({
                 key={tab.name}
                 className={classNames(
                   selected === tabs.indexOf(tab)
-                    ? "border-indigo-500 text-indigo-600"
+                    ? "border-sky-500 text-sky-600"
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
                   "whitespace-nowrap border-b-2 px-8 py-4 text-sm font-medium"
                 )}

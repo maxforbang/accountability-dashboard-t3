@@ -20,10 +20,17 @@ import CreateGoalInput from "./CreateGoalInput";
 
 interface GoalsCheckListProps {
   goals: Goal[];
-  accountabilityPeriod: AccountabilityPeriod;
+  teamId: string;
+  date: Date;
+  type: "WEEK" | "QUARTER" | "YEAR";
 }
 
-const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps) => {
+const EditGoalsChecklist = ({
+  goals,
+  teamId,
+  date,
+  type,
+}: GoalsCheckListProps) => {
   const latestUpdatedGoal = goals.reduce((previousGoal, currentGoal) => {
     return currentGoal.updatedAt > (previousGoal ? previousGoal.updatedAt : 0)
       ? currentGoal
@@ -33,13 +40,22 @@ const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps
   const [createNewGoalMode, setCreateNewGoalMode] = useState(false);
 
   const goalRows = goals.map((goal) => {
-    return <EditGoalInput goal={goal} key={`edit-goal-${goal.id}`}/>;
+    return <EditGoalInput goal={goal} key={`edit-goal-${goal.id}`} type={type}/>;
   });
 
   return (
     <div className="mt-4">
       <fieldset className="border-b border-gray-200">
-        {createNewGoalMode ? <CreateGoalInput setCreateNewGoalMode={setCreateNewGoalMode} accountabilityPeriodId={accountabilityPeriod.id} /> : <NewGoalButton setCreateNewGoalMode={setCreateNewGoalMode} />}
+        {createNewGoalMode ? (
+          <CreateGoalInput
+            setCreateNewGoalMode={setCreateNewGoalMode}
+            teamId={teamId}
+            date={date}
+            type={type}
+          />
+        ) : (
+          <NewGoalButton setCreateNewGoalMode={setCreateNewGoalMode} />
+        )}
         <div className="divide-y divide-gray-200">{goalRows}</div>
       </fieldset>
       <div className="mt-5 flex justify-end text-sm">
@@ -53,11 +69,15 @@ const EditGoalsChecklist = ({ goals, accountabilityPeriod }: GoalsCheckListProps
 
 export default EditGoalsChecklist;
 
-const NewGoalButton = ({setCreateNewGoalMode}: {setCreateNewGoalMode: (value: boolean) => void}) => {
+const NewGoalButton = ({
+  setCreateNewGoalMode,
+}: {
+  setCreateNewGoalMode: (value: boolean) => void;
+}) => {
   return (
     <button
       type="button"
-      className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
       onClick={() => setCreateNewGoalMode(true)}
     >
       <svg
