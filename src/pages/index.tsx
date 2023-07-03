@@ -10,18 +10,17 @@ import AccountabilityCard from "~/components/AccountabilityCard";
 const Dashboard: NextPageWithLayout = () => {
   const { user } = useUser();
 
-  if (!user) {
-    return <p>Loading...</p>;
-  }
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const { data: { memberships = [], users = [] } = {} } =
     api.goals.getTeammates.useQuery({
-      userId: user.id,
-      teamId: user.publicMetadata["currentTeamId"] as string,
+      userId: user?.id || '1',
+      teamId: user?.publicMetadata["currentTeamId"] as string,
     });
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  
+    if (!user) {
+      return <p>Loading...</p>;
+    }
 
   return (
     <>

@@ -126,7 +126,7 @@ export const goalsRouter = createTRPCRouter({
         );
 
         try {
-          accountabilityPeriod = await prisma.accountabilityPeriod.create({
+          accountabilityPeriod = await ctx.prisma.accountabilityPeriod.create({
             data: {
               startDay: startDate,
               endDay: endDate,
@@ -202,7 +202,7 @@ export const goalsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      let accountabilityPeriod = await getAccountabilityPeriod(
+      const accountabilityPeriod = await getAccountabilityPeriod(
         ctx.prisma,
         input.teamId,
         input.selectedDate,
@@ -232,7 +232,7 @@ export const goalsRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      let accountabilityPeriod = await getAccountabilityPeriod(
+      const accountabilityPeriod = await getAccountabilityPeriod(
         ctx.prisma,
         input.teamId,
         input.selectedDate,

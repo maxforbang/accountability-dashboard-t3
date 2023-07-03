@@ -48,7 +48,7 @@ const GoalsChecklist = ({ goals, editable = true, type }: GoalsCheckListProps) =
             {goal.description}
           </p>
         </div>
-        {type === 'QUARTER' && <p className="text-gray-500">{`${goal.weight}%`}</p>}
+        {type === 'QUARTER' && <p className="text-gray-500">{`${goal.weight?.toString() ?? 0}%`}</p>}
         {editable && (
           <div className="ml-5 flex h-6 items-center">
             <input
