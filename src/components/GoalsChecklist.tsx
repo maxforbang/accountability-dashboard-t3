@@ -16,7 +16,8 @@ import type { Goal } from "@prisma/client";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { api } from "~/utils/api";
-import { timeSinceModifiedString } from "~/utils/shared/functions";
+import { calculateGoalPercentage } from "~/utils/shared/calculateCompletionPercentage";
+import { classNames, timeSinceModifiedString } from "~/utils/shared/functions";
 dayjs.extend(relativeTime);
 
 interface GoalsCheckListProps {
@@ -25,7 +26,11 @@ interface GoalsCheckListProps {
   type: "WEEK" | "QUARTER" | "YEAR";
 }
 
-const GoalsChecklist = ({ goals, editable = true, type }: GoalsCheckListProps) => {
+const GoalsChecklist = ({
+  goals,
+  editable = true,
+  type,
+}: GoalsCheckListProps) => {
   const ctx = api.useContext();
 
   const { mutate: toggleCompleted } = api.goals.toggleCompleted.useMutation({
@@ -37,18 +42,31 @@ const GoalsChecklist = ({ goals, editable = true, type }: GoalsCheckListProps) =
   const rows = goals.map((goal) => {
     return (
       <div
-        className="relative flex items-center pb-4 pt-3.5"
+        className={classNames(
+          "relative flex items-center pb-4 pt-3.5",
+          goal.completed ? "text-green-700" : "text-gray-500"
+        )}
         key={`goal-${goal.id}`}
       >
-        <div className="min-w-0 flex-1 leading-6 sm:leading-9">
-          <label htmlFor="comments" className="text-md sm:text-xl font-medium text-gray-900">
+        <div className="min-w-0 flex-1 leading-6 sm:leading-7">
+          <label
+            htmlFor="comments"
+            className={classNames(
+              "text-md font-medium sm:text-lg",
+              goal.completed ? "font-bold text-green-700" : "text-gray-900"
+            )}
+          >
             {goal.content}
           </label>
-          <p id="comments-description" className="text-md sm:text-lg text-gray-500">
+          <p id="comments-description" className="text-md sm:text-md ">
             {goal.description}
           </p>
         </div>
-        {type === 'QUARTER' && <p className="text-gray-500">{`${goal.weight?.toString() ?? 0}%`}</p>}
+        {type === "QUARTER" && (
+          <p className=" ml-5">{`${Math.round(
+            calculateGoalPercentage(goal, goals)
+          )}%`}</p>
+        )}
         {editable && (
           <div className="ml-5 flex h-6 items-center">
             <input
@@ -81,7 +99,7 @@ const GoalsChecklist = ({ goals, editable = true, type }: GoalsCheckListProps) =
     <>
       <fieldset className="border-b  border-gray-200">
         <legend className="sr-only">Notifications</legend>
-        <div className="divide-y sm:mt-1 divide-gray-200">{rows}</div>
+        <div className="divide-y divide-gray-200 sm:mt-1">{rows}</div>
       </fieldset>
       <div className="mt-5 flex justify-end text-sm">
         <p className="text-gray-400">
