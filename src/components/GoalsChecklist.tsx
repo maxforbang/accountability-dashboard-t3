@@ -43,8 +43,7 @@ const GoalsChecklist = ({
     return (
       <div
         className={classNames(
-          "relative flex items-center pb-4 pt-3.5",
-          goal.completed ? "text-green-700" : "text-gray-500"
+          "relative flex items-center pb-4 pt-3.5 text-gray-500"
         )}
         key={`goal-${goal.id}`}
       >
@@ -52,8 +51,7 @@ const GoalsChecklist = ({
           <label
             htmlFor="comments"
             className={classNames(
-              "text-md font-medium sm:text-lg",
-              goal.completed ? "font-bold text-green-700" : "text-gray-900"
+              "text-md font-medium sm:text-lg text-gray-900"
             )}
           >
             {goal.content}
@@ -63,7 +61,7 @@ const GoalsChecklist = ({
           </p>
         </div>
         {type === "QUARTER" && (
-          <p className=" ml-5">{`${Math.round(
+          <p className={classNames("ml-5", goal.completed ? 'font-bold text-green-700 border-2 border-green-700 px-2 rounded-lg' : '')}>{`${Math.round(
             calculateGoalPercentage(goal, goals)
           )}%`}</p>
         )}
@@ -74,7 +72,7 @@ const GoalsChecklist = ({
               aria-describedby="comments-description"
               name="comments"
               type="checkbox"
-              className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-sky-600"
+              className="h-5 w-5 rounded border-gray-300 text-green-700 focus:ring-sky-600"
               checked={goal.completed}
               onChange={() =>
                 toggleCompleted({

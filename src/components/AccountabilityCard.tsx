@@ -66,16 +66,16 @@ const AccountabilityCard = ({
         <div className="min-w-0 flex-auto">
           <p
             className={classNames(
-              "text-sm font-semibold leading-6 ",
-              goal.completed ? "text-emerald-700" : "text-gray-900"
+              "text-sm font-semibold leading-6 text-gray-900"
+              
             )}
           >
             {goal.content}
           </p>
           <p
             className={classNames(
-              "mt-1 flex text-xs leading-5",
-              goal.completed ? "text-emerald-600" : "text-gray-500"
+              "mt-1 flex text-xs leading-5 text-gray-500",
+              
             )}
           >
             {goal.description}
