@@ -89,15 +89,15 @@ export const goalsRouter = createTRPCRouter({
         return { goals, accountabilityPeriod: currentAccountabilityPeriod };
       } else {
         console.log('None exists')
-        const accountabilityPeriod = await prisma.accountabilityPeriod.create({
-          data: {
-            startDay: isMonday(input.selectedDate) ? input.selectedDate : previousMonday(input.selectedDate),
-            endDay: isSunday(input.selectedDate) ? input.selectedDate : nextSunday(input.selectedDate),
-            type: input.type,
-            teamId: input.teamId,
-          },
-        })
-        return { goals: [], accountabilityPeriod };
+        // const accountabilityPeriod = await prisma.accountabilityPeriod.create({
+        //   data: {
+        //     startDay: isMonday(input.selectedDate) ? input.selectedDate : previousMonday(input.selectedDate),
+        //     endDay: isSunday(input.selectedDate) ? input.selectedDate : nextSunday(input.selectedDate),
+        //     type: input.type,
+        //     teamId: input.teamId,
+        //   },
+        // })
+        return { goals: [], accountabilityPeriod: null };
       }
     }),
   toggleCompleted: publicProcedure

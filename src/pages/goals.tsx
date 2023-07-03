@@ -11,11 +11,13 @@ import { classNames } from "~/utils/shared/functions";
 const Dashboard: NextPageWithLayout = () => {
   const { user } = useUser();
 
-  const [accountabilityType, setAccountabilityType] = useState("YEAR");
+  const [accountabilityType, setAccountabilityType] = useState<'WEEK' | 'QUARTER' | 'YEAR'>("YEAR");
 
   if (!user) {
     return <p>Loading user...</p>;
   }
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
     <>
@@ -35,8 +37,9 @@ const Dashboard: NextPageWithLayout = () => {
               <SelfAccountabilityCard
                 teamId={user.publicMetadata["currentTeamId"] as string}
                 userId={user.id}
-                date={new Date()}
+                date={selectedDate}
                 type={accountabilityType}
+                setSelectedDate={setSelectedDate}
               />
             </div>
           </div>
@@ -52,26 +55,35 @@ Dashboard.getLayout = function getLayout(page: ReactElement) {
 
 export default Dashboard;
 
-const tabs = [
+type Tab = {
+  name: string;
+  type: "WEEK" | "QUARTER" | "YEAR";
+  current: boolean;
+};
+
+const tabs: Tab[] = [
   { name: "Weekly", type: "WEEK", current: false },
   { name: "Quarterly", type: "QUARTER", current: false },
   { name: "Yearly", type: "YEAR", current: true },
 ];
 
-function Tabs({setAccountabilityType}: {setAccountabilityType: (value: string) => void}) {
+function Tabs({
+  setAccountabilityType,
+}: {
+  setAccountabilityType: (value: "WEEK" | "QUARTER" | "YEAR") => void;
+}) {
   const [selected, setSelected] = useState(2);
 
-  const handleTabClick = (type: string, index: number) => {
+  const handleTabClick = (type: "WEEK" | "QUARTER" | "YEAR", index: number) => {
     setAccountabilityType(type);
-    setSelected(index)
-  }
+    setSelected(index);
+  };
 
   return (
-    <div className="flex justify-center sm:block pb-2">
-
+    <div className="flex justify-center pb-2 sm:block">
       <div className="sm:block">
         <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <nav className="-mb-px flex " aria-label="Tabs">
             {tabs.map((tab) => (
               <div
                 key={tab.name}
@@ -79,7 +91,7 @@ function Tabs({setAccountabilityType}: {setAccountabilityType: (value: string) =
                   selected === tabs.indexOf(tab)
                     ? "border-indigo-500 text-indigo-600"
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
-                  "whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                  "whitespace-nowrap border-b-2 px-8 py-4 text-sm font-medium"
                 )}
                 aria-current={tab.current ? "page" : undefined}
                 onClick={() => handleTabClick(tab.type, tabs.indexOf(tab))}

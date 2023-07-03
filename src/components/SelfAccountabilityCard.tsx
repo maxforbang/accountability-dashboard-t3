@@ -9,7 +9,9 @@ import { useUser } from "@clerk/nextjs";
 import { classNames } from "~/utils/shared/functions";
 import type { AccountabilityPeriod, Goal } from "@prisma/client";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { addDays, nextSunday, previousMonday, subDays } from "date-fns";
+import { addDays, getQuarter, subDays } from "date-fns";
+import { formatAccountabilityRangeFromDate } from "../utils/shared/formatAccountabilityRangeFromDate";
+import { newDateFromInterval } from "~/utils/shared/newDateFromInterval";
 
 const dateFormatOptions: Intl.DateTimeFormatOptions = {
   month: "long",
@@ -20,7 +22,7 @@ interface AccountabilityProps {
   teamId: string;
   userId: string;
   date: Date;
-  type: string | undefined;
+  type: 'WEEK' | 'QUARTER' | 'YEAR';
   editable?: boolean;
   setSelectedDate: (state: Date) => void;
 }
@@ -76,46 +78,38 @@ const SelfAccountabilityCard = ({
     return null;
   }
 
-  console.log(date)
-  console.log(previousMonday(date))
-  console.log(nextSunday(date))
-
   return (
     <>
       <div className="border-b border-gray-200 px-3 pb-8 sm:px-0">
-        <div className="flex sm:flex sm:items-baseline sm:justify-between">
-          <div className="flex w-full items-center gap-5">
-            <ChevronLeftIcon className="h-8 cursor-pointer" onClick={() => setSelectedDate(subDays(date, 7))}/>
+        <div className="relative flex sm:flex sm:items-baseline sm:justify-between">
+          <div className="flex w-full items-center justify-between gap-5">
+            <ChevronLeftIcon
+              className="h-8 cursor-pointer"
+              onClick={() => setSelectedDate(newDateFromInterval(date, type, 'decrease'))}
+            />
             <div className="min-w-5 ">
               <h1
                 id="message-heading"
-                className="text-4xl font-semibold text-gray-900 "
+                className="text-center text-4xl font-semibold text-gray-900 "
               >
-                {`${type[0] ?? ""}${
+                {type === 'QUARTER' ? `Quarter ${getQuarter(date)}` : `${type[0] ?? ""}${
                   type.slice(1, type.length).toLowerCase() ?? ""
-                }`}{" "}
-                Goals
+                } Goals`}
               </h1>
-              <p className="ml-1 mt-2 truncate text-xl text-gray-500">
-                {accountabilityPeriod?.startDay?.toLocaleDateString(
-                  undefined,
-                  dateFormatOptions
-                )}{" "}
-                -{" "}
-                {accountabilityPeriod?.endDay?.toLocaleDateString(
-                  undefined,
-                  dateFormatOptions
-                )}
+              <p className="ml-1 mt-2 truncate text-center text-xl text-gray-500">
+                {formatAccountabilityRangeFromDate(date, type)}
               </p>
             </div>
-            <ChevronRightIcon className="h-8 cursor-pointer" onClick={() => setSelectedDate(addDays(date, 7))}/>
+            <ChevronRightIcon
+              className="h-8 cursor-pointer"
+              onClick={() => setSelectedDate(newDateFromInterval(date, type, 'increase'))}
+            />
           </div>
 
-          <div className="ml-auto mt-4 flex sm:ml-6 sm:mt-0 sm:flex-shrink-0 sm:justify-start ">
-            {/* <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-              Open
-            </span> */}
-            {editable && (
+          {editable && (
+            <div className="absolute -right-6 -top-4 ">
+              {/* TODO: Make vertical ellipsis absolute positioning in the corner */}
+
               <Menu as="div" className="relative ml-3 inline-block text-left">
                 <div>
                   <Menu.Button className="-my-2 flex items-center rounded-full bg-gray-200 p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -296,8 +290,8 @@ const SelfAccountabilityCard = ({
                   </Menu.Items>
                 </Transition>
               </Menu>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
       {editMode ? (

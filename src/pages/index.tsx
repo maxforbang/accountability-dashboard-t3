@@ -21,7 +21,7 @@ const Dashboard: NextPageWithLayout = () => {
     });
 
   const [selectedDate, setSelectedDate] = useState(new Date());
-  console.log(setSelectedDate)
+  
 
   return (
     <>
