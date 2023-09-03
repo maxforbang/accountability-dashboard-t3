@@ -1,17 +1,43 @@
-import { startOfQuarter, endOfQuarter, startOfYear, endOfYear, startOfWeek, endOfWeek } from "date-fns";
+import {
+  startOfQuarter,
+  endOfQuarter,
+  startOfYear,
+  endOfYear,
+  startOfWeek,
+  endOfWeek,
+  subMinutes,
+  addDays,
+  subDays
+} from "date-fns";
 
 export function intervalFromDate(
-  date: Date,
+  utcDate: Date,
   type: "WEEK" | "QUARTER" | "YEAR"
 ): { startDate: Date; endDate: Date } {
+
+  const accountabilityStartDay = 1 // Monday
+  
+  let startDate, endDate;
+  const localDate = subMinutes(utcDate, utcDate.getTimezoneOffset())
+  const targetPeriod = subDays(localDate, accountabilityStartDay)
+
   switch (type) {
     case "WEEK":
-      return { startDate: startOfWeek(date), endDate: endOfWeek(date) };
+      startDate = startOfWeek(targetPeriod); // startOfWeek returns Sunday of local time
+      endDate = endOfWeek(targetPeriod);
+      break;
     case "QUARTER":
-      return { startDate: startOfQuarter(date), endDate: endOfQuarter(date) };
+      startDate = startOfQuarter(targetPeriod);
+      endDate = endOfQuarter(targetPeriod);
+      break;
     case "YEAR":
-      return { startDate: startOfYear(date), endDate: endOfYear(date) };
-    default:
-      throw new Error("Invalid type specified.");
+      startDate = startOfYear(targetPeriod);
+      endDate = endOfYear(targetPeriod);
+      break;
   }
+  
+  return {
+    startDate: addDays(startDate, accountabilityStartDay),
+    endDate: addDays(endDate, accountabilityStartDay),
+  };
 }
