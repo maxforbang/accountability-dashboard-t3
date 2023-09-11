@@ -9,6 +9,7 @@ import {
   addDays,
   subDays,
   addMilliseconds,
+  subMilliseconds,
 } from "date-fns";
 import { getTimezoneOffset } from "date-fns-tz";
 
@@ -42,7 +43,7 @@ export function intervalFromDate(
   endDate = addDays(endDate, accountabilityStartDay);
 
   return {
-    startDate: addMilliseconds(startDate, timezoneOffset),
-    endDate: addMilliseconds(endDate, timezoneOffset),
+    startDate: subMilliseconds(startDate, timezoneOffset),
+    endDate: subMilliseconds(endDate, timezoneOffset),
   };
 }
