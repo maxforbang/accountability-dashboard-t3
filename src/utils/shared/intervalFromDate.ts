@@ -7,23 +7,24 @@ import {
   endOfWeek,
   subMinutes,
   addDays,
-  subDays
+  subDays,
+  addMilliseconds,
 } from "date-fns";
+import { getTimezoneOffset } from "date-fns-tz";
 
 export function intervalFromDate(
   utcDate: Date,
   type: "WEEK" | "QUARTER" | "YEAR"
 ): { startDate: Date; endDate: Date } {
+  const accountabilityStartDay = 1; // Monday
 
-  const accountabilityStartDay = 1 // Monday
-  
   let startDate, endDate;
-  const localDate = subMinutes(utcDate, utcDate.getTimezoneOffset())
-  const targetPeriod = subDays(localDate, accountabilityStartDay)
+  const localDate = subMinutes(utcDate, utcDate.getTimezoneOffset());
+  const targetPeriod = subDays(localDate, accountabilityStartDay);
 
   switch (type) {
     case "WEEK":
-      startDate = startOfWeek(targetPeriod); // startOfWeek returns Sunday of local time
+      startDate = startOfWeek(targetPeriod); // startOfWeek returns Sunday of server's local time (UTC on Vercel)
       endDate = endOfWeek(targetPeriod);
       break;
     case "QUARTER":
@@ -35,9 +36,13 @@ export function intervalFromDate(
       endDate = endOfYear(targetPeriod);
       break;
   }
-  
+
+  const timezoneOffset = getTimezoneOffset("America/New_York");
+  startDate = addDays(startDate, accountabilityStartDay);
+  endDate = addDays(endDate, accountabilityStartDay);
+
   return {
-    startDate: addDays(startDate, accountabilityStartDay),
-    endDate: addDays(endDate, accountabilityStartDay),
+    startDate: addMilliseconds(startDate, timezoneOffset),
+    endDate: addMilliseconds(endDate, timezoneOffset),
   };
 }
