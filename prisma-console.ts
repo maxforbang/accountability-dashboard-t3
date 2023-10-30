@@ -3,37 +3,16 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient()
 
 async function main() {
-  const goalCreationInfo = await prisma.goal.createMany({
-    data: [
-      {
-        content: '$40k/mo Online Arbitrage',
-        description: '',
-        completed: false,
-        weight: null,
-        userId: 'user_2PcPLD4cCl4solXYo6RJ1blzEfd',
-        accountabilityPeriodId: 'cli2eoegs0000p0g6lhjluivm'
-      },
-      {
-        content: '$20k/mo Wholesale & Private Label',
-        description: '',
-        completed: false,
-        weight: null,
-        userId: 'user_2PcPLD4cCl4solXYo6RJ1blzEfd',
-        accountabilityPeriodId: 'cli2eoegs0000p0g6lhjluivm'
-      },
-      {
-        content: '$10k/mo Sales Commissions',
-        description: '',
-        completed: false,
-        weight: null,
-        userId: 'user_2PcPLD4cCl4solXYo6RJ1blzEfd',
-        accountabilityPeriodId: 'cli2eoegs0000p0g6lhjluivm'
-      },
-      
-    ]
+  const goalUpdateInfo = await prisma.goal.updateMany({
+    where: {
+      userId: "user_2PcPAQ9OxV5HK6kWpLEVylFpN4w"
+    },
+    data: {
+      userId: "user_2Vak4GRYutPDvUGcmG9zHgTACOb"
+    }
   });
   
-  console.log("Created goals: ", goalCreationInfo.count);
+  console.log("Updated goals: ", goalUpdateInfo.count);
 }
 
 main()

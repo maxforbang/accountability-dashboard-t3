@@ -21,7 +21,7 @@ export function intervalFromDate(
 
   let startDate, endDate;
   const localDate = subMinutes(utcDate, utcDate.getTimezoneOffset());
-  const targetPeriod = subDays(localDate, accountabilityStartDay);
+  const targetPeriod = localDate;
 
   switch (type) {
     case "WEEK":
