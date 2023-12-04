@@ -139,7 +139,8 @@ export const goalsRouter = createTRPCRouter({
           log.warn("Accountability Period created", {
             serverTime: new Date(),
             passedInDate: input.selectedDate,
-            accountabilityPeriodDates: `${startDate} - ${endDate}`,
+            accountabilityPeriodStart: startDate,
+            accountabilityPeriodEnd: endDate,
           });
         } catch (error) {
           console.error(error);
