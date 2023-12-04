@@ -1,6 +1,7 @@
 import { clerkClient } from "@clerk/nextjs";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { isMonday, isSunday, nextSunday, previousMonday } from "date-fns";
+import { log } from "next-axiom";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -134,6 +135,12 @@ export const goalsRouter = createTRPCRouter({
               teamId: input.teamId,
             },
           });
+
+          log.warn("Accountability Period created", {
+            serverTime: new Date(),
+            passedInDate: input.selectedDate,
+            accountabilityPeriodDates: `${startDate} - ${endDate}`,
+          });
         } catch (error) {
           console.error(error);
           throw new Error(
@@ -153,7 +160,7 @@ export const goalsRouter = createTRPCRouter({
             content: input.content,
             description: input.description,
             completed: false,
-            weight: parseFloat(input.weight || '1'),
+            weight: parseFloat(input.weight || "1"),
           },
         }))
       );
@@ -175,7 +182,7 @@ export const goalsRouter = createTRPCRouter({
         data: {
           content: input.content,
           description: input.description,
-          weight: parseFloat(input.weight || '1'),
+          weight: parseFloat(input.weight || "1"),
         },
       });
     }),
