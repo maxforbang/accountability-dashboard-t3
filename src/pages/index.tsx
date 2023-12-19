@@ -26,7 +26,7 @@ const Dashboard: NextPageWithLayout = () => {
     <>
       <Head>
         <title>
-          {`Dashboard | ${user.publicMetadata["currentTeamName"] as string}`}
+          {`${user.publicMetadata["currentTeamName"] as string}`}
         </title>
         <meta
           name="description"
