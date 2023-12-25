@@ -76,9 +76,9 @@ const SelfAccountabilityCard = ({
     <>
       <div className=" border-gray-200 px-3 pb-8 sm:px-0">
         <div className="relative flex sm:flex sm:items-baseline sm:justify-between">
-          <div className="flex w-full items-center justify-center gap-6 sm:justify-between">
+          <div className="flex w-full items-center justify-center sm:gap-6 sm:justify-between">
             <ChevronLeftIcon
-              className="h-8 cursor-pointer"
+              className="h-8 cursor-pointer overflow-visible"
               onClick={() =>
                 setSelectedDate(dateFromInterval(date, type, "decrease"))
               }
@@ -99,7 +99,7 @@ const SelfAccountabilityCard = ({
               </p>
             </div>
             <ChevronRightIcon
-              className="h-8 cursor-pointer "
+              className="h-8 cursor-pointer overflow-visible"
               onClick={() =>
                 setSelectedDate(dateFromInterval(date, type, "increase"))
               }
